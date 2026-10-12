@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "packVersion": "vybe-assets-1",
+  "generatedBy": "scripts/prepare-assets.mjs",
+  "licenses": [
+    {
+      "id": "ofl-ibm-plex-sans",
+      "path": "licenses/IBM-Plex-Sans-OFL-1.1.txt"
+    },
+    {
+      "id": "ofl-ibm-plex-mono",
+      "path": "licenses/IBM-Plex-Mono-OFL-1.1.txt"
+    }
+  ],
+  "assets": [
+    {
+      "id": "font-ibm-plex-sans-400",
+      "kind": "font",
+      "path": "fonts/ibm-plex-sans-latin-400-normal.woff2",
+      "sha256": "3b646991d30055a93a4ecc499713d4347953a74a947ecab435ab72070cbdab0e",
+      "bytes": 22588,
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/IBM-Plex-Sans-OFL-1.1.txt",
+      "source": {
+        "upstream": "https://github.com/IBM/plex",
+        "package": "@fontsource/ibm-plex-sans@5.3.0",
+        "packageFile": "files/ibm-plex-sans-latin-400-normal.woff2"
+      },
+      "conversion": "Copied unchanged from the npm package (latin subset WOFF2)."
+    },
+    {
+      "id": "font-ibm-plex-sans-500",
+      "kind": "font",
+      "path": "fonts/ibm-plex-sans-latin-500-normal.woff2",
+      "sha256": "0717336fb31fcdcde4b8deb3675bb4a0f7f6d484864afcd6751ac29975962203",
+      "bytes": 24184,
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/IBM-Plex-Sans-OFL-1.1.txt",
+      "source": {
+        "upstream": "https://github.com/IBM/plex",
+        "package": "@fontsource/ibm-plex-sans@5.3.0",
+        "packageFile": "files/ibm-plex-sans-latin-500-normal.woff2"
+      },
+      "conversion": "Copied unchanged from the npm package (latin subset WOFF2)."
+    },
+    {
+      "id": "font-ibm-plex-sans-600",
+      "kind": "font",
+      "path": "fonts/ibm-plex-sans-latin-600-normal.woff2",
+      "sha256": "8960851d691c054ed38e259bdcf1a6190d157b4203ed5bb32c632a863fb8ec2f",
+      "bytes": 24252,
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/IBM-Plex-Sans-OFL-1.1.txt",
+      "source": {
+        "upstream": "https://github.com/IBM/plex",
+        "package": "@fontsource/ibm-plex-sans@5.3.0",
+        "packageFile": "files/ibm-plex-sans-latin-600-normal.woff2"
+      },
+      "conversion": "Copied unchanged from the npm package (latin subset WOFF2)."
+    },
+    {
+      "id": "font-ibm-plex-mono-400",
+      "kind": "font",
+      "path": "fonts/ibm-plex-mono-latin-400-normal.woff2",
+      "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7",
+      "bytes": 14708,
+      "license": "OFL-1.1",
+      "licenseFile": "licenses/IBM-Plex-Mono-OFL-1.1.txt",
+      "source": {
+        "upstream": "https://github.com/IBM/plex",
+        "package": "@fontsource/ibm-plex-mono@5.3.0",
+        "packageFile": "files/ibm-plex-mono-latin-400-normal.woff2"
+      },
+      "conversion": "Copied unchanged from the npm package (latin subset WOFF2)."
+    }
+  ]
+}

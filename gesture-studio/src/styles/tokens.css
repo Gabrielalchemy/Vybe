@@ -1,0 +1,46 @@
+/* Canonical tokens from DESIGN_SYSTEM.md §2. Do not maintain a second palette. */
+:root {
+  color-scheme: dark;
+  --bg-canvas: #111514;
+  --bg-surface: #191f1d;
+  --bg-raised: #232b27;
+  --bg-hover: #2c3730;
+  --text-primary: #f2f0e8;
+  --text-secondary: #b8c1b9;
+  --text-muted: #97a59a;
+  --border-subtle: #36433a;
+  --border-interactive: #75887b;
+  --lane-melody: #87bcae;
+  --lane-chord: #d8af6e;
+  --status-danger: #f28b82;
+  --status-warning: #e3be61;
+  --status-success: #87bcae;
+  --focus-on-dark: #c7dec9;
+  --focus-on-light: #29483d;
+  --key-natural: #ece8dd;
+  --key-accidental: #232b27;
+  --ink-on-light: #19201b;
+
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, monospace;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-control: 6px;
+  --radius-panel: 10px;
+  --radius-key: 4px;
+  --shadow-overlay: 0 12px 32px rgb(0 0 0 / 28%);
+  --motion-feedback: 90ms;
+  --motion-panel: 160ms;
+  --ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-popover: 20;
+  --z-dialog: 30;
+  --z-toast: 40;
+}
