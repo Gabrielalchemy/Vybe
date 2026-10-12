@@ -6,7 +6,7 @@ Requires Node 24 and npm. Internet access is only needed to install dependencies
 
 ```sh
 npm ci                  # install from the lockfile
-npm run assets:prepare  # copy licensed local assets and write the manifest
+npm run assets:prepare  # copy fonts/WASM, download the pinned hand model (needs internet once), write the manifest
 npm run dev             # http://localhost:4173 (strict port)
 npm run build && npm run start   # production build served on the same origin
 ```

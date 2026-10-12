@@ -1,4 +1,5 @@
 import { validateProjectRecord, type ProjectRecord } from "../domain/project";
+import { validateCalibrationProfile, type CalibrationProfile } from "../domain/tracking/calibration";
 import { fail, ok, type Result } from "../domain/result";
 import type { StorageError } from "../domain/storageError";
 
@@ -33,6 +34,9 @@ export interface ProjectRepository {
   listProjects(): Promise<Result<ProjectSummary[], StorageError>>;
   getPreference(key: string): Promise<Result<unknown, StorageError>>;
   setPreference(key: string, value: unknown): Promise<Result<void, StorageError>>;
+  /** One profile per camera device; null when none is stored. */
+  saveCalibration(profile: CalibrationProfile): Promise<Result<void, StorageError>>;
+  loadCalibration(deviceId: string): Promise<Result<CalibrationProfile | null, StorageError>>;
   close(): void;
 }
 
@@ -185,15 +189,34 @@ class IndexedDbRepository implements ProjectRepository {
   }
 
   async setPreference(key: string, value: unknown): Promise<Result<void, StorageError>> {
-    const opened = this.tx(["preferences"], "readwrite");
+    return this.put("preferences", { key, value }, "The preference could not be saved.");
+  }
+
+  async saveCalibration(profile: CalibrationProfile): Promise<Result<void, StorageError>> {
+    const valid = validateCalibrationProfile(profile);
+    if (!valid.ok) return fail({ code: "invalid-record", message: valid.error });
+    return this.put("calibration", { id: profile.camera.deviceId, profile: valid.value }, "The calibration could not be saved.");
+  }
+
+  async loadCalibration(deviceId: string): Promise<Result<CalibrationProfile | null, StorageError>> {
+    const raw = await this.read("calibration", deviceId);
+    if (!raw.ok) return raw;
+    const entry = raw.value as { profile?: unknown } | undefined;
+    if (!entry) return ok(null);
+    const valid = validateCalibrationProfile(entry.profile);
+    return valid.ok ? ok(valid.value) : fail({ code: "invalid-record", message: `The saved calibration is unusable: ${valid.error}` });
+  }
+
+  private async put(store: StoreName, value: unknown, failure: string): Promise<Result<void, StorageError>> {
+    const opened = this.tx([store], "readwrite");
     if (!opened.ok) return opened;
     const done = completion(opened.value);
     try {
-      opened.value.objectStore("preferences").put({ key, value });
+      opened.value.objectStore(store).put(value);
     } catch (error) {
       opened.value.abort();
       await done;
-      return fail(toStorageError(error, "The preference could not be saved."));
+      return fail(toStorageError(error, failure));
     }
     return done;
   }

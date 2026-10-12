@@ -127,4 +127,27 @@ describe("SessionController", () => {
     session.press("left", "chord-slot-0", "keyboard");
     expect(session.snapshot().lanes.left.resting).toBe(false);
   });
+
+  it("camera input never self-arms; it needs explicit neutral-open arming", () => {
+    expect(session.press("right", "melody-pc-0", "camera")).toMatchObject({ status: "rejected", reason: "not-armed" });
+    session.armCamera("right");
+    expect(session.press("right", "melody-pc-0", "camera").status).toBe("sounded");
+  });
+
+  it("camera loss releases a camera-held lane and leaves the other hand alone", () => {
+    session.armCamera("right");
+    session.press("right", "melody-pc-0", "camera");
+    session.press("left", "chord-slot-0", "keyboard");
+    session.lost("right");
+    expect(session.snapshot().soundingTargets.map((t) => t.hand)).toEqual(["left"]);
+  });
+
+  it("forgets a voice the audio engine stole and records the voice-limit release", () => {
+    session.press("left", "chord-slot-0", "keyboard");
+    const voiceId = dispatched.flat().find((e) => e.kind === "note-on")!.voiceId;
+    session.voiceStolen(voiceId);
+    expect(dispatched.flat().some((e) => e.kind === "voice-release" && e.voiceId === voiceId && e.reason === "voice-limit")).toBe(true);
+    expect(session.snapshot().soundingNotes).toHaveLength(3);
+  });
 });
+

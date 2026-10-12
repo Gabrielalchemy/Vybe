@@ -1,5 +1,8 @@
 import { useCallback, useState } from "react";
+import type { HandControl, HandControlSnapshot } from "../../app/handControl";
 import type { SessionController, SessionSnapshot } from "../../app/sessionController";
+import { CameraPanel } from "../camera/CameraPanel";
+import { HandOverlay } from "../camera/HandOverlay";
 import type { HandRole } from "../../domain/events";
 import { CHORD_LAYOUT, MELODY_LAYOUT, type LayoutTarget } from "../../domain/layout";
 import { melodyOctaveNotes, pitchName } from "../../domain/pitch";
@@ -13,13 +16,17 @@ interface PlayViewProps {
   snapshot: SessionSnapshot;
   onOctave: (delta: -1 | 1) => void;
   octaveMessage: string | null;
+  handControl: HandControl;
+  handSnapshot: HandControlSnapshot;
+  cameraVideo: HTMLVideoElement;
 }
 
-export function PlayView({ session, snapshot, onOctave, octaveMessage }: PlayViewProps) {
+export function PlayView({ session, snapshot, onOctave, octaveMessage, handControl, handSnapshot, cameraVideo }: PlayViewProps) {
   const [sizeProblems, setSizeProblems] = useState<Record<HandRole, string | null>>({ left: null, right: null });
   const onSizeProblem = useCallback((hand: HandRole, problem: string | null) => {
     setSizeProblems((prev) => (prev[hand] === problem ? prev : { ...prev, [hand]: problem }));
   }, []);
+  const onSurfaceSize = useCallback((hand: HandRole, size: { width: number; height: number }) => handControl.setLaneSize(hand, size), [handControl]);
 
   const notes = melodyOctaveNotes(snapshot.melodyOctave);
   const describeMelody = (t: LayoutTarget): TargetView => {
@@ -65,10 +72,31 @@ export function PlayView({ session, snapshot, onOctave, octaveMessage }: PlayVie
         </p>
       )}
       <div className="play__lanes">
-        <Lane session={session} snapshot={snapshot} hand="left" title="Chords" layout={CHORD_LAYOUT} describe={describeChord} onSizeProblem={onSizeProblem} />
-        <Lane session={session} snapshot={snapshot} hand="right" title="Melody" layout={MELODY_LAYOUT} describe={describeMelody} onSizeProblem={onSizeProblem} />
+        <Lane
+          session={session}
+          snapshot={snapshot}
+          hand="left"
+          title="Chords"
+          layout={CHORD_LAYOUT}
+          describe={describeChord}
+          onSizeProblem={onSizeProblem}
+          onSurfaceSize={onSurfaceSize}
+          overlay={<HandOverlay handControl={handControl} hand="left" layout={CHORD_LAYOUT} />}
+        />
+        <Lane
+          session={session}
+          snapshot={snapshot}
+          hand="right"
+          title="Melody"
+          layout={MELODY_LAYOUT}
+          describe={describeMelody}
+          onSizeProblem={onSizeProblem}
+          onSurfaceSize={onSurfaceSize}
+          overlay={<HandOverlay handControl={handControl} hand="right" layout={MELODY_LAYOUT} />}
+        />
       </div>
       <div className="play__footer">
+        <div className="play__footer-left">
         <section className="panel chord-context" aria-labelledby="chord-context-title">
           <h2 id="chord-context-title" className="panel__title">Chord pitches</h2>
           {chordContext ? (
@@ -95,6 +123,8 @@ export function PlayView({ session, snapshot, onOctave, octaveMessage }: PlayVie
           </div>
           {octaveMessage && <p className="muted">{octaveMessage}</p>}
         </section>
+        </div>
+        <CameraPanel handControl={handControl} snapshot={handSnapshot} video={cameraVideo} />
       </div>
     </div>
   );

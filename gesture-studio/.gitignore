@@ -3,3 +3,6 @@ dist/
 test-results/
 playwright-report/
 *.tsbuildinfo
+public/assets/mediapipe/
+asset-cache/
+public/assets/piano/

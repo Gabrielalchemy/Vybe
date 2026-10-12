@@ -226,7 +226,9 @@ kbd {
 .target--rest .target__label { font: 500 14px/20px var(--font-ui); }
 .target--rest.is-resting { border-style: solid; color: var(--text-primary); }
 
-.play__footer { display: grid; grid-template-columns: 2fr 3fr; gap: var(--space-6); }
+.play__footer { display: grid; grid-template-columns: 2fr 3fr; gap: var(--space-6); align-items: start; }
+.play__footer-left { display: grid; gap: var(--space-4); }
+.play__footer-left .panel { padding: var(--space-4) var(--space-5); }
 .panel {
   padding: var(--space-5);
   border: 1px solid var(--border-subtle);
@@ -326,3 +328,74 @@ kbd {
 .meter { display: inline-flex; gap: var(--space-2); align-items: center; }
 .meter__bar { width: 120px; height: 8px; border: 1px solid var(--border-interactive); border-radius: 2px; position: relative; }
 .meter__fill { position: absolute; inset: 0 auto 0 0; background: var(--status-danger); }
+
+/* Hand control */
+.camera-panel__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.camera-panel__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.camera-panel__body { display: flex; gap: var(--space-4); align-items: flex-start; }
+.camera-panel__content { display: grid; gap: var(--space-3); min-width: 0; flex: 1; justify-items: start; }
+.camera-preview--inset { flex: none; }
+.camera-panel .notice { margin: 0; }
+.readiness { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); font-size: 14px; }
+.readiness .is-ok { color: var(--status-success); }
+
+.camera-preview { position: relative; background: #000; border-radius: var(--radius-control); overflow: hidden; }
+.camera-preview--inset { width: 240px; height: 135px; }
+.camera-preview--large { width: 100%; aspect-ratio: 16 / 9; }
+/* Mirrored and letterboxed (never cropped) to match the hit-test transform. */
+.camera-preview__video { width: 100%; height: 100%; object-fit: contain; transform: scaleX(-1); display: block; }
+.camera-preview__overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+.lane-cursor {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+  background: var(--bg-canvas);
+}
+.lane-cursor[hidden], .hover-outline[hidden] { display: none; }
+.hover-outline {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: var(--radius-key);
+}
+.lane--chord .hover-outline { box-shadow: inset 0 0 0 2px var(--lane-chord); }
+.lane--melody .hover-outline { box-shadow: inset 0 0 0 3px var(--focus-on-light), inset 0 0 0 5px var(--lane-melody); }
+.lane-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18%;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-primary);
+  pointer-events: none;
+  z-index: 2;
+}
+.lane-hint:empty { display: none; }
+
+.calibration { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: var(--space-6); align-items: start; }
+.calibration__side { display: grid; gap: var(--space-4); }
+.calibration__side .notice { margin: 0; }
+.calibration__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); color: var(--text-secondary); }
+.calibration__steps [aria-current="step"] { color: var(--text-primary); font-weight: 500; }
+.calibration__steps .is-done { color: var(--status-success); }
+.calibration__instruction { font: 500 18px/26px var(--font-ui); min-height: 52px; }
+.progress { height: 8px; border: 1px solid var(--border-interactive); border-radius: 4px; overflow: hidden; }
+.progress__fill { height: 100%; background: var(--lane-melody); }
+
+.field { display: grid; gap: var(--space-1); font: 500 14px/20px var(--font-ui); }
+.field select {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-interactive);
+  border-radius: var(--radius-control);
+  font: inherit;
+}
+@media (max-width: 1100px) {
+  .calibration { grid-template-columns: 1fr; }
+}
+.transport__error { color: var(--status-danger); gap: var(--space-2); }

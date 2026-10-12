@@ -146,6 +146,16 @@ export class SessionController {
     return this.finish(outcome);
   }
 
+  /** Neutral-open evidence from the camera arms that hand's lane; camera presses never self-arm. */
+  armCamera(hand: HandRole): void {
+    if (this.session.kind !== "ready") return;
+    const lane = this.lanes[hand];
+    if (lane.input !== null && lane.input !== "camera") return;
+    this.router.arm(hand);
+    this.resting[hand] = false;
+    this.publish();
+  }
+
   release(hand: HandRole, input: InputKind): IntentOutcome {
     const intent = this.intent(hand, "release", null, input);
     const lane = this.lanes[hand];
@@ -170,6 +180,12 @@ export class SessionController {
     const outcome = this.router.handle(this.intent(hand, "lost", null, "camera"));
     this.clearLane(hand);
     return this.finish(outcome);
+  }
+
+  /** Keep bookkeeping consistent when the audio engine cuts a voice at the voice limit. */
+  voiceStolen(voiceId: string): void {
+    this.dispatch(this.router.forgetVoice(voiceId));
+    this.publish();
   }
 
   setSustain(down: boolean): void {

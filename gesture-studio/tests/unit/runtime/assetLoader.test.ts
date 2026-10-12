@@ -17,6 +17,7 @@ const entry = async (overrides: Partial<AssetEntry> = {}): Promise<AssetEntry> =
   license: "CC-BY-3.0",
   licenseFile: "licenses/salamander.txt",
   source: { upstream: "https://example.invalid/salamander" },
+  sample: { instrument: "grand-piano", rootMidi: 60, velocityLayer: 10, attackOffsetSec: 0.003, durationSec: 7, decodedBytesEstimate: 2688000 },
   ...overrides,
 });
 
@@ -81,3 +82,28 @@ describe("validateAssetManifest", () => {
     }
   });
 });
+
+describe("sample metadata", () => {
+  const sampleMeta = { instrument: "grand-piano", rootMidi: 60, velocityLayer: 10, attackOffsetSec: 0.003, durationSec: 7, decodedBytesEstimate: 2688000 };
+  const manifestWith = async (overrides: Partial<AssetEntry> & Record<string, unknown>) => ({
+    schemaVersion: 1,
+    packVersion: "p",
+    licenses: [],
+    assets: [await entry({ kind: "sample", ...overrides } as Partial<AssetEntry>)],
+  });
+
+  it("accepts a sample with complete metadata", async () => {
+    const r = validateAssetManifest(await manifestWith({ sample: sampleMeta }));
+    expect(r.ok && r.value.assets[0]?.sample?.rootMidi).toBe(60);
+  });
+
+  it("rejects a sample without metadata or with impossible values", async () => {
+    const { sample: _omit, ...withoutMeta } = await entry();
+    void _omit;
+    expect(validateAssetManifest({ schemaVersion: 1, packVersion: "p", licenses: [], assets: [withoutMeta] }).ok).toBe(false);
+    expect(validateAssetManifest(await manifestWith({ sample: { ...sampleMeta, attackOffsetSec: -0.1 } })).ok).toBe(false);
+    expect(validateAssetManifest(await manifestWith({ sample: { ...sampleMeta, rootMidi: 130 } })).ok).toBe(false);
+    expect(validateAssetManifest(await manifestWith({ sample: { ...sampleMeta, velocityLayer: 17 } })).ok).toBe(false);
+  });
+});
+

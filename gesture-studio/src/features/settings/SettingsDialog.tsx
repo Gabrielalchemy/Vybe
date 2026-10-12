@@ -3,6 +3,8 @@ import type { AppRuntime } from "../../app/runtime";
 import type { SessionSnapshot } from "../../app/sessionController";
 import { pitchName } from "../../domain/pitch";
 import { SimulatorPanel } from "../dev/SimulatorPanel";
+import { AudioSettings } from "./AudioSettings";
+import { CameraSettings } from "./CameraSettings";
 
 interface Props {
   open: boolean;
@@ -56,7 +58,7 @@ export function SettingsDialog({ open, onClose, runtime, snapshot }: Props) {
       <div className="dialog__body">
         <section className="settings-group" aria-labelledby="sg-camera">
           <h3 id="sg-camera">Camera &amp; calibration</h3>
-          <p>Hand control is not available in this build yet. Play with the keyboard or pointer.</p>
+          <CameraSettings handControl={runtime.handControl} open={open} />
         </section>
         <section className="settings-group" aria-labelledby="sg-playing">
           <h3 id="sg-playing">Playing</h3>
@@ -71,7 +73,7 @@ export function SettingsDialog({ open, onClose, runtime, snapshot }: Props) {
         </section>
         <section className="settings-group" aria-labelledby="sg-audio">
           <h3 id="sg-audio">Audio</h3>
-          <p>Sound is not available in this build yet. Pads show what would sound; nothing plays.</p>
+          <AudioSettings runtime={runtime} open={open} />
         </section>
         <section className="settings-group" aria-labelledby="sg-storage">
           <h3 id="sg-storage">Storage</h3>
@@ -108,7 +110,7 @@ function Diagnostics({ runtime, snapshot }: { runtime: AppRuntime; snapshot: Ses
   return (
     <>
       <p className="muted">
-        Times use the session clock ({runtime.clock}); there is no audio clock in this build. Configuration revision{" "}
+        Musical times use the audio clock once sound has started. Configuration revision{" "}
         <span className="data">{snapshot.configurationRevision}</span>.
       </p>
       <h4>Recent input</h4>

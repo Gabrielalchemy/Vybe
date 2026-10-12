@@ -9,11 +9,12 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByRole("status").filter({ hasText: /^Saved$/ })).toBeVisible();
 });
 
-test("opens Play with the Pop chord voicings and states that sound is not available", async ({ page }) => {
+test("opens Play with the Pop chord voicings and sound off until started", async ({ page }) => {
   await expect(chord(page, "chord-slot-0")).toContainText("C3 G3 C4 E4");
   await expect(chord(page, "chord-slot-3")).toContainText("F2 F3 A3 C4");
   await expect(chord(page, "chord-slot-4")).toContainText("Empty");
-  await expect(page.getByText("Sound not available in this build")).toBeVisible();
+  await expect(page.locator(".shell__status")).toContainText("Sound off");
+  await expect(page.getByRole("button", { name: "Start sound" })).toBeVisible();
 });
 
 test("keyboard melody key holds the note until the same key is released", async ({ page }) => {

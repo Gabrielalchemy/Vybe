@@ -97,6 +97,14 @@ export class VoiceRegistry {
     return [...sources].flatMap((s) => this.flush(s, reason, audioTimeSec));
   }
 
+  /** The audio engine cut this voice (voice limit); keep bookkeeping consistent with what sounds. */
+  forget(voiceId: string, reason: ForcedReleaseReason, audioTimeSec: number): PerformanceEvent[] {
+    const voice = this.voices.get(voiceId);
+    if (!voice) return [];
+    this.voices.delete(voiceId);
+    return [{ kind: "voice-release", voiceId, source: voice.source, reason, audioTimeSec }];
+  }
+
   isSustainDown(source: EventSource): boolean {
     return this.sustainDown.has(source);
   }

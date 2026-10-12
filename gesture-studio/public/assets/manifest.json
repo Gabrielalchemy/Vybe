@@ -10,6 +10,14 @@
     {
       "id": "ofl-ibm-plex-mono",
       "path": "licenses/IBM-Plex-Mono-OFL-1.1.txt"
+    },
+    {
+      "id": "cc-by-3.0-salamander",
+      "path": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt"
+    },
+    {
+      "id": "apache-2.0-mediapipe",
+      "path": "licenses/MediaPipe-Apache-2.0.txt"
     }
   ],
   "assets": [
@@ -72,6 +80,2121 @@
         "packageFile": "files/ibm-plex-mono-latin-400-normal.woff2"
       },
       "conversion": "Copied unchanged from the npm package (latin subset WOFF2)."
+    },
+    {
+      "id": "mediapipe-vision-wasm-module-internal-js",
+      "kind": "wasm-loader",
+      "path": "mediapipe/wasm/vision_wasm_module_internal.js",
+      "sha256": "70eff3956521b7de058d7173a4935c95e4a223c26ea624b9f5a936d3a043dcb0",
+      "bytes": 335431,
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/MediaPipe-Apache-2.0.txt",
+      "source": {
+        "upstream": "https://github.com/google-ai-edge/mediapipe",
+        "package": "@mediapipe/tasks-vision@1.1.0",
+        "packageFile": "wasm/vision_wasm_module_internal.js"
+      },
+      "conversion": "Copied unchanged from the npm package."
+    },
+    {
+      "id": "mediapipe-vision-wasm-module-internal-wasm",
+      "kind": "wasm",
+      "path": "mediapipe/wasm/vision_wasm_module_internal.wasm",
+      "sha256": "ee03b14a878e6c3c053a1bfa62e166dc45244be54dc0bbe61c578f710b771f6a",
+      "bytes": 12997272,
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/MediaPipe-Apache-2.0.txt",
+      "source": {
+        "upstream": "https://github.com/google-ai-edge/mediapipe",
+        "package": "@mediapipe/tasks-vision@1.1.0",
+        "packageFile": "wasm/vision_wasm_module_internal.wasm"
+      },
+      "conversion": "Copied unchanged from the npm package."
+    },
+    {
+      "id": "mediapipe-hand-landmarker",
+      "kind": "model",
+      "path": "mediapipe/hand_landmarker.task",
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
+      "bytes": 7819105,
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/MediaPipe-Apache-2.0.txt",
+      "source": {
+        "upstream": "https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker",
+        "url": "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
+        "upstreamVersion": "hand_landmarker float16/1 (Last-Modified 2023-04-26)"
+      },
+      "conversion": "Downloaded unchanged; SHA-256 pinned in scripts/prepare-assets.mjs."
+    },
+    {
+      "id": "piano-A0-v4",
+      "kind": "sample",
+      "path": "piano/A0-v4.flac",
+      "sha256": "80e3a7c2b5b3581d35f4039abbebf47985f981f8155991982b7314e455b5947b",
+      "bytes": 343261,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A0v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 535628fa41bfbf9795d2dc8ae5a53304d061b670)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 21,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0023,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A0-v10",
+      "kind": "sample",
+      "path": "piano/A0-v10.flac",
+      "sha256": "e057ca63752eeb4d624469833a14802959859d47242ebe683b79619b6fc6679f",
+      "bytes": 365368,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A0v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob e787a20d6167cbed7cfca6d80d4c1e5c517c07c1)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 21,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.001,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A0-v16",
+      "kind": "sample",
+      "path": "piano/A0-v16.flac",
+      "sha256": "b025b2c83bb4aa9e9ff5aa5870787f3efec418e0233d5618fdfe79463c6c4899",
+      "bytes": 387453,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A0v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 7c29a8970608feac6e1a907ae560af4b9d802145)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 21,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C1-v4",
+      "kind": "sample",
+      "path": "piano/C1-v4.flac",
+      "sha256": "6e911bbe453550f50ce3876da3d05cbcbbafed2fa2aed55c4edc1848d3484ed1",
+      "bytes": 354217,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C1v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 886d82cb146d108be4d5ca342bfd9949991a08f2)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 24,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0001,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C1-v10",
+      "kind": "sample",
+      "path": "piano/C1-v10.flac",
+      "sha256": "34d835d2609765862495023c28b172e105550f605c15076ebe869cb98cde224d",
+      "bytes": 367848,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C1v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 6ed5183c91ebc3e87dfe1cfeb22369416198e0af)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 24,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0051,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C1-v16",
+      "kind": "sample",
+      "path": "piano/C1-v16.flac",
+      "sha256": "6d069d2fa59f2c7cefb778767c41be86fe64181a3e0f3d743d5a8b7c00bbb897",
+      "bytes": 389367,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C1v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 046b085908b960187af96b8c96268785e191b9c3)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 24,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0046,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Ds1-v4",
+      "kind": "sample",
+      "path": "piano/Ds1-v4.flac",
+      "sha256": "e351b1ddaf910a2729016b99e6ddfb41e21cd442276d5773e4289559ce5359e2",
+      "bytes": 376093,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%231v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob fc5939b97eb88417b8da7a2ba083becc32ba4a69)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 27,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0005,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Ds1-v10",
+      "kind": "sample",
+      "path": "piano/Ds1-v10.flac",
+      "sha256": "1db6ab1096db7bd92ce343285a6df6159745b8677feddcad1deb20fd273729b8",
+      "bytes": 403898,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%231v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob b496d5100b4f2bb1c55dda5b708fa6dd777353bc)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 27,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Ds1-v16",
+      "kind": "sample",
+      "path": "piano/Ds1-v16.flac",
+      "sha256": "05795dd39366ed4392cd1ad87175d33b7b0ab414407593c09d4f3d2607192926",
+      "bytes": 431015,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%231v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob a0ad005c1f0eed7db714d8d2a3e0206a2e9547bc)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 27,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Fs1-v4",
+      "kind": "sample",
+      "path": "piano/Fs1-v4.flac",
+      "sha256": "620643ceffca8b661ca895e7d1589a17ceacf488fdcdfc34070c8c47d76b8f22",
+      "bytes": 369104,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%231v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob dcbae9ecaf328b1cee96b4c61888cf026cfde451)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 30,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0037,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Fs1-v10",
+      "kind": "sample",
+      "path": "piano/Fs1-v10.flac",
+      "sha256": "22363569252e3e73a3d88d3a5e0d935af361eb7f28989a862f979dc49a3055ae",
+      "bytes": 387766,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%231v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 5b4fdfb6daa433ffff1ebd0b18ee96aca53866e6)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 30,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0013,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Fs1-v16",
+      "kind": "sample",
+      "path": "piano/Fs1-v16.flac",
+      "sha256": "ad7a1d4aed2939f1f97937ee75ef4fa2537143f7a8aa4bd291d3dc07fc17eff8",
+      "bytes": 414355,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%231v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob dc0e687edb389b8b60c6b726a83bb9a58953ac8b)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 30,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0047,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A1-v4",
+      "kind": "sample",
+      "path": "piano/A1-v4.flac",
+      "sha256": "79cd8bd116ae37f903e3a67bb23ed18da3e0705e436e770581fc69c51422b72d",
+      "bytes": 371403,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A1v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 79631701dd545f3d8b6f907f0c4c341502e1cfbd)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 33,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0001,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A1-v10",
+      "kind": "sample",
+      "path": "piano/A1-v10.flac",
+      "sha256": "58d06852a5a2e5709029a4824962a8bfd9cb4608fc56477202f2998d26c387ab",
+      "bytes": 391874,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A1v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 20855977760f9944dc7c520028f86e2016f9ff46)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 33,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A1-v16",
+      "kind": "sample",
+      "path": "piano/A1-v16.flac",
+      "sha256": "da1a6d286e7d301bb9a118e0c0fb4d094fc321c3eb5006efb04d9ae3fdff144f",
+      "bytes": 445645,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A1v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 3f86fb2ef9ceeca594560619fad231f4aa87a0ed)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 33,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0005,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C2-v4",
+      "kind": "sample",
+      "path": "piano/C2-v4.flac",
+      "sha256": "e78840a05190ab97ed2989ed46cfd0f7e36d10d8a296a281c26f4b62409e3208",
+      "bytes": 371173,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C2v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 44069876a12eb7010efd1d42952bcec27d1c448b)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 36,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0055,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C2-v10",
+      "kind": "sample",
+      "path": "piano/C2-v10.flac",
+      "sha256": "32f6a9521980ac4ed0e2235d22663b0469fcb0cc4f10e99d89eb3b3a3f19f996",
+      "bytes": 394838,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C2v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 9cc0d113f911c0a4b75d67ab1cfc40080c513ec9)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 36,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C2-v16",
+      "kind": "sample",
+      "path": "piano/C2-v16.flac",
+      "sha256": "a2b920d9aca9c12b62854fcdcb3e4f9bf00d528eeaca1f23d95906f5e072d311",
+      "bytes": 435875,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C2v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob d8d276b57d9f27c28b797f4792dc3102639b4472)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 36,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0001,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Ds2-v4",
+      "kind": "sample",
+      "path": "piano/Ds2-v4.flac",
+      "sha256": "366fd9ac008298015d29796198d625f0a530d6eb9b4fbdf8cfaa89e1be8b57b4",
+      "bytes": 382231,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%232v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 02d16509980233442732fd8bb270e381d86b826b)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 39,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Ds2-v10",
+      "kind": "sample",
+      "path": "piano/Ds2-v10.flac",
+      "sha256": "de74b94b45f84cb2c106ca8c0c2de7c3256116462671070f863eea30a89bfdc4",
+      "bytes": 398652,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%232v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob fab951535b1b4dbea78eaf35df45729c09186bd2)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 39,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Ds2-v16",
+      "kind": "sample",
+      "path": "piano/Ds2-v16.flac",
+      "sha256": "b6171e243079cea675f37eb3459c9f62854c684f6881b1d0dd847224fa52b1b7",
+      "bytes": 435684,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%232v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 30974f0a48bab534763751ec6c5318eb233263f8)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 39,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0003,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Fs2-v4",
+      "kind": "sample",
+      "path": "piano/Fs2-v4.flac",
+      "sha256": "c6bc4177174f353696bace4a3ff49ac2ad0f912cf21d60a9b2ca66eabe7cee4e",
+      "bytes": 360870,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%232v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 4920957694cb66c041c7a43718465cddf3138a94)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 42,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0024,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Fs2-v10",
+      "kind": "sample",
+      "path": "piano/Fs2-v10.flac",
+      "sha256": "c7da4ff89f9aa5b583c7f11499b18f08b57b59aa18a82887e0dc5e23114c3300",
+      "bytes": 388939,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%232v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 59f768d31c6f1fad6dbac2957cbd0cece2c23301)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 42,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.001,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-Fs2-v16",
+      "kind": "sample",
+      "path": "piano/Fs2-v16.flac",
+      "sha256": "dc248078443583ec4f4ef12c68bd7735abab1b4ee57bfbe871d4338bc69ec513",
+      "bytes": 428766,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%232v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 1a584ee073caba5915da79675cc3c80364f017a8)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 42,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0004,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A2-v4",
+      "kind": "sample",
+      "path": "piano/A2-v4.flac",
+      "sha256": "f9f15156cbb39eeee77192281d646c97d483659f3cf3c2f969886bfcf884e1bd",
+      "bytes": 376259,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A2v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 174e85b13bb2a848aa7a8d326d230e8118b45f26)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 45,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0041,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A2-v10",
+      "kind": "sample",
+      "path": "piano/A2-v10.flac",
+      "sha256": "d4020e5833782e4341531b9269165d82736eb8980088e0293444b572e937ebd3",
+      "bytes": 390126,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A2v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob d5baac2d9a33a2ac3b11eddc2983760911073449)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 45,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0001,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-A2-v16",
+      "kind": "sample",
+      "path": "piano/A2-v16.flac",
+      "sha256": "0a03300c57cd0d40e610df390790b99d1d7184a8f691a1e340fa2d0f0993cfbe",
+      "bytes": 447087,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A2v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 9feefc52ca202aa8638c7c9407758dcda42fb8de)"
+      },
+      "conversion": "Trimmed to 10.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 45,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0005,
+        "durationSec": 10,
+        "decodedBytesEstimate": 3840000
+      }
+    },
+    {
+      "id": "piano-C3-v4",
+      "kind": "sample",
+      "path": "piano/C3-v4.flac",
+      "sha256": "7e8b05e227ef89d55397f3b692195daccb78e2b4382d480ef00ba080910fa9eb",
+      "bytes": 248123,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C3v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob f444418d4e08bf183c468fc47877a6edac4dc7b3)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 48,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0036,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-C3-v10",
+      "kind": "sample",
+      "path": "piano/C3-v10.flac",
+      "sha256": "8a126a01a5e8eb843f0f5763bbb533151a46765c6fe0d4c139a886db4eb5e644",
+      "bytes": 270450,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C3v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 8f738c6a688f7c1b7535396d94c263d6786c3e52)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 48,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0022,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-C3-v16",
+      "kind": "sample",
+      "path": "piano/C3-v16.flac",
+      "sha256": "e924006855727f2cf888e71f02b58ddbb7ebb08a7235a76459dfeff6bf613265",
+      "bytes": 301274,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C3v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 05391ccf3a7fd724920ffefda57eac91a935fc56)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 48,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0013,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Ds3-v4",
+      "kind": "sample",
+      "path": "piano/Ds3-v4.flac",
+      "sha256": "4ce50718336233e1887d9e0b9040a3fcf776fe23fe0069e1983a1c3e258b06f0",
+      "bytes": 260197,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%233v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob c15e1da31dc99ff6adcc3cad8ea22f08201b0dd8)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 51,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0096,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Ds3-v10",
+      "kind": "sample",
+      "path": "piano/Ds3-v10.flac",
+      "sha256": "f3f59af0ba14274f6111df6cabbeb2f0728022adfdf606e87c0b1054513337da",
+      "bytes": 277034,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%233v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 3cf3301db3a797af410b400cf984bc54013d7cbb)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 51,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0017,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Ds3-v16",
+      "kind": "sample",
+      "path": "piano/Ds3-v16.flac",
+      "sha256": "272392ee332bba0f08197237eadec767f3cee2809a877421b41a2b265534959c",
+      "bytes": 305255,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%233v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 916f03d03217bad5288b87a6a41be95e6bb95287)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 51,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Fs3-v4",
+      "kind": "sample",
+      "path": "piano/Fs3-v4.flac",
+      "sha256": "bcbb613daa835fa39a293324f0c3f21a02b7922a0ca223d9aca9e9c79a206afa",
+      "bytes": 255277,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%233v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 9c606c221ffa7157f0154a0ea3745f49ab558d2e)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 54,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0056,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Fs3-v10",
+      "kind": "sample",
+      "path": "piano/Fs3-v10.flac",
+      "sha256": "5c40cb7a237185ce1031031930093a0dfff42f57cdb197bc82c6c20e1ababeb0",
+      "bytes": 276199,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%233v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 368334bf28e5fb4ab2ce796ce5b4ec9547b8ecd3)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 54,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0011,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Fs3-v16",
+      "kind": "sample",
+      "path": "piano/Fs3-v16.flac",
+      "sha256": "77d54e49d75855bf790e23b922a309f09f42757b93d960a345f8c0525205c613",
+      "bytes": 309111,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%233v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 3d4c1f7f8d23aaa94008e3816a55a2163ac991a1)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 54,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-A3-v4",
+      "kind": "sample",
+      "path": "piano/A3-v4.flac",
+      "sha256": "39b169383a971a3f64c1fbadda838d8dd2d848e5381fd31accffd15d45e17e73",
+      "bytes": 258089,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A3v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 85daca85afedb67bcb43091f237369fd11ab471f)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 57,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0021,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-A3-v10",
+      "kind": "sample",
+      "path": "piano/A3-v10.flac",
+      "sha256": "5494ba264f2bd2375e7e81e824ac7db9393e7a188d10996773d5b52537e7c959",
+      "bytes": 272995,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A3v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 92766b9a6979abb7d7e2623f89189ba81f012ac0)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 57,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0022,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-A3-v16",
+      "kind": "sample",
+      "path": "piano/A3-v16.flac",
+      "sha256": "1e49401e215667aaea7e2f603a8693f04ef726dae83adac9e7177a0a631ed27b",
+      "bytes": 304347,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A3v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 989751de51f2eea7bffd036ba866dcf356c11b5d)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 57,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0001,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-C4-v4",
+      "kind": "sample",
+      "path": "piano/C4-v4.flac",
+      "sha256": "c1291e34a68e6985a9c5d01fce7447775871b2e3f8041616fccf38c1c023b356",
+      "bytes": 254030,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C4v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob e117320966904afc39687b40d6a1285ba2af4083)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 60,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0064,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-C4-v10",
+      "kind": "sample",
+      "path": "piano/C4-v10.flac",
+      "sha256": "84bbd0489f2628db7a0653b64e71518a5b95e71163117d174d425454fb7ff25d",
+      "bytes": 279934,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C4v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob b5b7a1ee9237d68f475bb75d7f407a8fb334765e)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 60,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0024,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-C4-v16",
+      "kind": "sample",
+      "path": "piano/C4-v16.flac",
+      "sha256": "90b91a32134218b1b15aedb878906df1e898d1f66ed0a15b71265dbbfd5ffe54",
+      "bytes": 299330,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C4v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 0ab0b0700532f483468a0b299fd2902eaaa59599)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 60,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0014,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Ds4-v4",
+      "kind": "sample",
+      "path": "piano/Ds4-v4.flac",
+      "sha256": "7ac154032179ad5707b0b06d1e11f8ccb7dcec7a01500a444db1265b7ab25f87",
+      "bytes": 242300,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%234v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 84b262757ef3d13bb03e2ce2f91bf8f20080de87)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 63,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0027,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Ds4-v10",
+      "kind": "sample",
+      "path": "piano/Ds4-v10.flac",
+      "sha256": "734fd2cdf0d1aede4b05336edecca8573953681f333b117eb46a33f6248fc36b",
+      "bytes": 259437,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%234v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob ac7f1a68e5e28fe789f7cf734f4b0bc06f268f2a)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 63,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.003,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Ds4-v16",
+      "kind": "sample",
+      "path": "piano/Ds4-v16.flac",
+      "sha256": "88be2e78392c4408bf956e171ac96838eb83a3bf13f9d0639f593b17ec7d5eba",
+      "bytes": 282165,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%234v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob c0e3c6d245a66378d494373af7c62698e8af00c9)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 63,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0004,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Fs4-v4",
+      "kind": "sample",
+      "path": "piano/Fs4-v4.flac",
+      "sha256": "62e7de18aa31d0b07c76b54aa2c5adbf3c5a89eddcfd65906c27dbb1afa61db5",
+      "bytes": 238153,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%234v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 54b88eb6ff6b483bb6167d5bafd51adb04312a72)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 66,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0017,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Fs4-v10",
+      "kind": "sample",
+      "path": "piano/Fs4-v10.flac",
+      "sha256": "59f33b79f9b0ffd90ebee5f31216365548ea76e00c783b79be453d93d4b84fb5",
+      "bytes": 254011,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%234v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 73ffb431db8f7b87b3ce87b1bee7a98d37cb227e)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 66,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0012,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-Fs4-v16",
+      "kind": "sample",
+      "path": "piano/Fs4-v16.flac",
+      "sha256": "c32dc02f128bce6e0b8f8f50563b0b6daab487956f096d0aea93289efe3cc7d9",
+      "bytes": 279831,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%234v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob de02ded96a34777dfa1b99853b5092d84524dbd3)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 66,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-A4-v4",
+      "kind": "sample",
+      "path": "piano/A4-v4.flac",
+      "sha256": "41cb0de0b7ce7154cc8abc0a0ee495d8bc7ea94ee23c142a9e8c81c16ed785ee",
+      "bytes": 234882,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A4v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 1a9018881386288b67074613e667fbf8c19495d9)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 69,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0071,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-A4-v10",
+      "kind": "sample",
+      "path": "piano/A4-v10.flac",
+      "sha256": "01172b4d94f3a1cc3592b208de8be6207e5aec9b6a713f31e3911cf372c76ba1",
+      "bytes": 257432,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A4v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 03f67d4185fb0832dc7d71d1f4b6ab5e6411bdbc)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 69,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0023,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-A4-v16",
+      "kind": "sample",
+      "path": "piano/A4-v16.flac",
+      "sha256": "2500c674e616ed2fd8478554d51f1a3e1517c775f098889a34e688f83d425a37",
+      "bytes": 277286,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A4v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 34afed4c9cc4554da71be6a115049b8866875836)"
+      },
+      "conversion": "Trimmed to 7.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 69,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 7,
+        "decodedBytesEstimate": 2688000
+      }
+    },
+    {
+      "id": "piano-C5-v4",
+      "kind": "sample",
+      "path": "piano/C5-v4.flac",
+      "sha256": "f4a87e741ce9c27fb5d04c011bebc4791f0d80e3fe37692daf4697e94cb81547",
+      "bytes": 175412,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C5v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 2b72e6ac462075d0b79432ddb4f5fbbe114ca6be)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 72,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0062,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-C5-v10",
+      "kind": "sample",
+      "path": "piano/C5-v10.flac",
+      "sha256": "14f884d9a9c984c2f3eac5382d337a21bcc0204d212c8ed076b09fde753d5ae2",
+      "bytes": 189048,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C5v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 23ea6cc91183718127e540155e6ab98fa74da143)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 72,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0028,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-C5-v16",
+      "kind": "sample",
+      "path": "piano/C5-v16.flac",
+      "sha256": "f18ccaa87678d84a8100117f9b5306f65153f63f535bc83e628a44033ed0b011",
+      "bytes": 210817,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C5v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 42c23f6132943738fd1ccadaae374e874adaf9c3)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 72,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0014,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Ds5-v4",
+      "kind": "sample",
+      "path": "piano/Ds5-v4.flac",
+      "sha256": "127d52e5c1526dc36278519fe5d3c8adefd4e273ac1ab97b575a7c4c4a3a2a8a",
+      "bytes": 175774,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%235v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 64ad0790398a06cea1f047e846e3365d2d142cc5)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 75,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0075,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Ds5-v10",
+      "kind": "sample",
+      "path": "piano/Ds5-v10.flac",
+      "sha256": "07ec4278f3fd2487e5854477b6225ec2106049f18b65a74d16bbdab049315c0f",
+      "bytes": 187190,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%235v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 41757e6312472297d836d636a748887700f7c497)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 75,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.004,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Ds5-v16",
+      "kind": "sample",
+      "path": "piano/Ds5-v16.flac",
+      "sha256": "9435938300bc9bd1c2a17b45c5e63fdcb4b3295cb6b44ee2043bed674296f801",
+      "bytes": 219200,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%235v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 1f93fb479a781441711d8e6e30b9fd7ef012104f)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 75,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Fs5-v4",
+      "kind": "sample",
+      "path": "piano/Fs5-v4.flac",
+      "sha256": "8c776f36573b88a8671ed0c6376f11e85a3a322cfe7c019ea51a263eb215bf05",
+      "bytes": 168875,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%235v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 142a45fd5c55bdabcf3bb7ee19f3934fac8c10c2)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 78,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0061,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Fs5-v10",
+      "kind": "sample",
+      "path": "piano/Fs5-v10.flac",
+      "sha256": "f437a2ba94c97d24f7a55c177a8c6961cce5cfc4c106b48b847fa10e7242d667",
+      "bytes": 180217,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%235v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 64e705839fb189e5674fe5dcca01ee4ab6ed0298)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 78,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0024,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Fs5-v16",
+      "kind": "sample",
+      "path": "piano/Fs5-v16.flac",
+      "sha256": "7d58dc12e44c90fa77a22f0ec3efd08b65f64a36be6b68fd9bf938218b9716de",
+      "bytes": 203150,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%235v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 61f7121d7256744cfad506c0854db648c8899018)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 78,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0004,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-A5-v4",
+      "kind": "sample",
+      "path": "piano/A5-v4.flac",
+      "sha256": "370c4eed3eafbf4567c787274b71296bed280dd2ed4e2249b99ff01155b04796",
+      "bytes": 171283,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A5v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob b5a67dd216af1634e63f6dda86eaa814c4128fac)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 81,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0019,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-A5-v10",
+      "kind": "sample",
+      "path": "piano/A5-v10.flac",
+      "sha256": "f3f1fc23227f58649d889997c035a0f7e0c45fbb0665555ff3c014a1e3ab8f83",
+      "bytes": 185478,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A5v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 365aa2345745b36ce388c30e7cdad1815f953a9d)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 81,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0039,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-A5-v16",
+      "kind": "sample",
+      "path": "piano/A5-v16.flac",
+      "sha256": "2b72d5e99f1f9b33b60ff64e1d96f7ec4d133bbf2551f033c8f5f8938c581d91",
+      "bytes": 206567,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A5v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob fce284749647ecde3c3ae7e62cb8c52b59482b2f)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 81,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0023,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-C6-v4",
+      "kind": "sample",
+      "path": "piano/C6-v4.flac",
+      "sha256": "8b68c8fd825c9dba24c24787239fa703c8775892f4edf957c376717229b30a01",
+      "bytes": 175669,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C6v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob c92b02529426929342b3354731b32b1fd6f06aaf)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 84,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.003,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-C6-v10",
+      "kind": "sample",
+      "path": "piano/C6-v10.flac",
+      "sha256": "e6b9d1c3ed30d7f11319b1a09b3cd9d89bca624b476d42b7ce4c9794ad3433f7",
+      "bytes": 190201,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C6v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob c15d8b70374cfdc51c261da5810c61c6a87b2171)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 84,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0004,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-C6-v16",
+      "kind": "sample",
+      "path": "piano/C6-v16.flac",
+      "sha256": "e51246b36a2d9438415643702f7d8288179796fc833cdbe589d7d6961b20486e",
+      "bytes": 207345,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C6v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob d9a3c6e69c421f7ee92869a3a4a0577a02c7cb82)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 84,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Ds6-v4",
+      "kind": "sample",
+      "path": "piano/Ds6-v4.flac",
+      "sha256": "7cafef289971b46ee3d5787be7facbc44e1b7d0504636df770d8cdd9f55bbdaa",
+      "bytes": 184888,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%236v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 1b17d7e0ae76bda00d370b44d82f50f53bb69e42)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 87,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.004,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Ds6-v10",
+      "kind": "sample",
+      "path": "piano/Ds6-v10.flac",
+      "sha256": "9bc1bf32ea6e3eb2d227ec61d98d571607f4247209bdb2b7f642fa293380b8ef",
+      "bytes": 198816,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%236v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob f58fc9ef0ce5aac07e3a3bb51abeb8b094866971)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 87,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Ds6-v16",
+      "kind": "sample",
+      "path": "piano/Ds6-v16.flac",
+      "sha256": "3c91de39bc9b0767449b3f5510270f490620c412c37b15b626a8a4f30f2c8e5c",
+      "bytes": 212444,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%236v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob f3bd1f64826e585be71737d532b367ae1ef20434)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 87,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.001,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Fs6-v4",
+      "kind": "sample",
+      "path": "piano/Fs6-v4.flac",
+      "sha256": "d86a13347dbfe190a62a09b59e86783afea9b60d2fe48136ed7d9acaf250d5d6",
+      "bytes": 173910,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%236v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob cd1f16223c7b79338796155d37e8f9e022dee7a8)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 90,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0037,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Fs6-v10",
+      "kind": "sample",
+      "path": "piano/Fs6-v10.flac",
+      "sha256": "d426ec87dcde8cde218e885358f0ce04d006fec57d5aea18480af22aa3943288",
+      "bytes": 186360,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%236v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 37b5207734a463a8d74a31b97c26a62b9ee5b25c)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 90,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0026,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-Fs6-v16",
+      "kind": "sample",
+      "path": "piano/Fs6-v16.flac",
+      "sha256": "db6784ee7dbb0109ffdb3a72971965e58a29056039155a2aa928ddf55e9f2069",
+      "bytes": 202013,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%236v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob e6727a162aea51395f22ad45e59796ca8edcbdb2)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 90,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.001,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-A6-v4",
+      "kind": "sample",
+      "path": "piano/A6-v4.flac",
+      "sha256": "3ac4b5ee0ae00105cbe76536b3050eaea8ec3cd58193c81493fcad8f400ed240",
+      "bytes": 163863,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A6v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 50fbb0b4ed59afbb886f74d76905a04cbd9c5f7f)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 93,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0061,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-A6-v10",
+      "kind": "sample",
+      "path": "piano/A6-v10.flac",
+      "sha256": "927a2d2de1b7349d965ffe7c7f06887a03688ad82a5a70b92569031a03c64c11",
+      "bytes": 172072,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A6v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 89e03b4ea345079836f7ff0f631c120eae3f7a20)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 93,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.005,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-A6-v16",
+      "kind": "sample",
+      "path": "piano/A6-v16.flac",
+      "sha256": "c66997b6de51fefaf73c2f4699c6302a4f4603c7e213c0e431bcbde982c55b18",
+      "bytes": 185274,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A6v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob faa24d80d55bbe58b6a072eeae6e9bcdeadb6fca)"
+      },
+      "conversion": "Trimmed to 5.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 93,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0012,
+        "durationSec": 5,
+        "decodedBytesEstimate": 1920000
+      }
+    },
+    {
+      "id": "piano-C7-v4",
+      "kind": "sample",
+      "path": "piano/C7-v4.flac",
+      "sha256": "b70260a42a87e01872bd53ebdd69adf7c5afae9b97b69d1bede016ec0c9f143f",
+      "bytes": 100201,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C7v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 473d480a9216c2cd0d73e8413d42f02de614e388)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 96,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0077,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-C7-v10",
+      "kind": "sample",
+      "path": "piano/C7-v10.flac",
+      "sha256": "ad060fdef706c08e5fa35872272658449e4aa9c902c589cf11f3f4e036d5eebd",
+      "bytes": 106325,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C7v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob d4b101d9bf95ce5658c871a52730aa6bf5d632bd)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 96,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0045,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-C7-v16",
+      "kind": "sample",
+      "path": "piano/C7-v16.flac",
+      "sha256": "fa8f4631d4aae56167250537ef1de532a9e8883f8f67b2af135e525bbad0f693",
+      "bytes": 115861,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C7v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob bcff7eba0f3530f510e348b95920015a0ea92cb6)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 96,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0021,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-Ds7-v4",
+      "kind": "sample",
+      "path": "piano/Ds7-v4.flac",
+      "sha256": "0e382ef1ca87aa1a519b4d64a7aca43a4c69cfbfd7df13236d8c34ddd2655c1e",
+      "bytes": 101307,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%237v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob fb3320c369664e5a290e18ee40585fd962c250ef)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 99,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.005,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-Ds7-v10",
+      "kind": "sample",
+      "path": "piano/Ds7-v10.flac",
+      "sha256": "65e6ddd6e75fe219f4146e1e75cfe13e194d8dfef59b140acdc20d17b9016bab",
+      "bytes": 108531,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%237v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 049b777d8519a7ce858ef1b73e08eece3b8bea8a)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 99,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0005,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-Ds7-v16",
+      "kind": "sample",
+      "path": "piano/Ds7-v16.flac",
+      "sha256": "02e4a8610cd96c46d1afcc472edf1c1d78509e3073546b194ba050357f554d98",
+      "bytes": 121289,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/D%237v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 30e29eebf6e983aa02ee7b271e1a8ef4a7552257)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 99,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0002,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-Fs7-v4",
+      "kind": "sample",
+      "path": "piano/Fs7-v4.flac",
+      "sha256": "b2df622b1a54fec6577cf9d0926e790d2a2c5181c16b55c5c35889dab700aa56",
+      "bytes": 118412,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%237v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob c1ac67e7d0d4de1a90dab5ffad7507d1d968ec0a)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 102,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.0048,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-Fs7-v10",
+      "kind": "sample",
+      "path": "piano/Fs7-v10.flac",
+      "sha256": "9795b8db8ce8d9850069c5d366cea727e8b9fd7cbbcc55ebd52ae0e6e4e49202",
+      "bytes": 122152,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%237v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob ab4b49a84c241b5564bb7434d2d163a158395db4)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 102,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.002,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-Fs7-v16",
+      "kind": "sample",
+      "path": "piano/Fs7-v16.flac",
+      "sha256": "2ecbcf0114c0f3d8ffacefdcd6fef97faa85f6ac04855b012509dbd9f8ba2da0",
+      "bytes": 133513,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/F%237v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 926ea523daa2cdd1394baa6b9e2d9ea4265e4ecb)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 102,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-A7-v4",
+      "kind": "sample",
+      "path": "piano/A7-v4.flac",
+      "sha256": "4dbf72713b694fc597338c4bf316742f7e464c1af6b816b358fae7847510cb4b",
+      "bytes": 100127,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A7v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob f44a21c5e28ca05a9ad2048602b7a3372c02fd24)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 105,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.005,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-A7-v10",
+      "kind": "sample",
+      "path": "piano/A7-v10.flac",
+      "sha256": "f724418a0780f55d05d0bea038bb329c13452f7ae3179defcc89df17f32dc69e",
+      "bytes": 105453,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A7v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 5f4a735b7a596d44f90c66815c410422267efb11)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 105,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0052,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-A7-v16",
+      "kind": "sample",
+      "path": "piano/A7-v16.flac",
+      "sha256": "edd0c9c9d10fa7f40f14440704b735545c06577d9ab3583bd51571a33deac8c6",
+      "bytes": 120439,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/A7v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 350c68bbbf01c4febf26b6d80d93a6affc2e7d05)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 105,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0.0002,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-C8-v4",
+      "kind": "sample",
+      "path": "piano/C8-v4.flac",
+      "sha256": "dbc02ab3807e28eacb4e0ecbd793ce3ad98b490c8d9fbf5df4c13f8ecab50477",
+      "bytes": 99445,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C8v4.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 5a322f58cd9cbba1463b680b1801ea75bda0c5a7)"
+      },
+      "conversion": "Trimmed to 2.81 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 108,
+        "velocityLayer": 4,
+        "attackOffsetSec": 0.002,
+        "durationSec": 2.811,
+        "decodedBytesEstimate": 1079360
+      }
+    },
+    {
+      "id": "piano-C8-v10",
+      "kind": "sample",
+      "path": "piano/C8-v10.flac",
+      "sha256": "035a257b4ffcf2a4e1f9965f8f25eb602f21e58c4dee82c454815e7be6351cb8",
+      "bytes": 110515,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C8v10.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 8d34eb8753a4048892d5e4876f76bac714ffa6bb)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 108,
+        "velocityLayer": 10,
+        "attackOffsetSec": 0.0008,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
+    },
+    {
+      "id": "piano-C8-v16",
+      "kind": "sample",
+      "path": "piano/C8-v16.flac",
+      "sha256": "b932283299cac367402945a3adec799852a0a55c0a2c9c6f08f0a2e866e41c72",
+      "bytes": 122450,
+      "license": "CC-BY-3.0",
+      "licenseFile": "licenses/Salamander-Grand-Piano-CC-BY-3.0.txt",
+      "source": {
+        "upstream": "https://github.com/sfzinstruments/SalamanderGrandPiano",
+        "url": "https://raw.githubusercontent.com/sfzinstruments/SalamanderGrandPiano/3382bf9496bba2486f5ab0de55a264d1dfc38404/Samples/C8v16.flac",
+        "upstreamVersion": "3382bf9496bba2486f5ab0de55a264d1dfc38404 (git blob 19e96c9dc23a0a8618bab726de1ac606ba283e55)"
+      },
+      "conversion": "Trimmed to 3.00 s with a 0.5 s fade-out; 48 kHz 16-bit FLAC with triangular dither (ffmpeg).",
+      "sample": {
+        "instrument": "grand-piano",
+        "rootMidi": 108,
+        "velocityLayer": 16,
+        "attackOffsetSec": 0,
+        "durationSec": 3,
+        "decodedBytesEstimate": 1152000
+      }
     }
   ]
 }

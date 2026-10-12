@@ -120,3 +120,45 @@ describe("openRepository", () => {
     expect(!result.ok && result.error.code).toBe("unavailable");
   });
 });
+
+describe("calibration profiles", () => {
+  const profile = {
+    profileVersion: 1,
+    createdAt: "2026-10-12T12:00:00.000Z",
+    camera: { deviceId: "cam", label: "HP HD Camera", width: 1280, height: 720, mirrored: true },
+    processing: { longEdgePx: 640, modelSha256: "a".repeat(64) },
+    handednessCorrection: "swapped" as const,
+    hands: {
+      left: { region: { x: 0.05, y: 0.2, w: 0.35, h: 0.6 }, pinch: { press: 0.45, release: 0.85, closedHigh: 0.2, openLow: 1.2 } },
+      right: { region: { x: 0.55, y: 0.2, w: 0.38, h: 0.6 }, pinch: { press: 0.4, release: 0.8, closedHigh: 0.18, openLow: 1.1 } },
+    },
+    cursorTauMs: 35,
+    recommendedTempoBpm: 70,
+  };
+
+  it("saves and reloads the profile for a camera", async () => {
+    expect((await repo.saveCalibration(profile)).ok).toBe(true);
+    const loaded = await repo.loadCalibration("cam");
+    expect(loaded.ok && loaded.value?.handednessCorrection).toBe("swapped");
+  });
+
+  it("returns no profile for an unknown camera", async () => {
+    expect(await repo.loadCalibration("other")).toEqual({ ok: true, value: null });
+  });
+
+  it("reports a stored profile that fails validation instead of using it", async () => {
+    await repo.saveCalibration(profile);
+    await new Promise<void>((resolve, reject) => {
+      const req = factory.open(DB_NAME);
+      req.onsuccess = () => {
+        const tx = req.result.transaction("calibration", "readwrite");
+        tx.objectStore("calibration").put({ id: "cam", profile: { ...profile, hands: { left: profile.hands.right, right: profile.hands.left } } });
+        tx.oncomplete = () => { req.result.close(); resolve(); };
+        tx.onerror = () => reject(tx.error);
+      };
+    });
+    const loaded = await repo.loadCalibration("cam");
+    expect(!loaded.ok && loaded.error.code).toBe("invalid-record");
+  });
+});
+

@@ -1,6 +1,6 @@
 import { fail, ok, type Result } from "./result";
 
-export type AssetKind = "font" | "sample" | "model" | "wasm";
+export type AssetKind = "font" | "sample" | "model" | "wasm" | "wasm-loader";
 
 export interface AssetEntry {
   id: string;
@@ -11,8 +11,20 @@ export interface AssetEntry {
   bytes: number;
   license: string;
   licenseFile: string;
-  source: { upstream: string; package?: string; packageFile?: string };
+  source: { upstream: string; package?: string; packageFile?: string; url?: string; upstreamVersion?: string };
   conversion?: string;
+  /** Required for kind "sample". */
+  sample?: SampleMeta;
+}
+
+export interface SampleMeta {
+  instrument: string;
+  rootMidi: number;
+  velocityLayer: number;
+  /** Seconds of near-silence before the attack; playback starts here. */
+  attackOffsetSec: number;
+  durationSec: number;
+  decodedBytesEstimate: number;
 }
 
 export interface AssetManifest {
@@ -22,7 +34,7 @@ export interface AssetManifest {
   assets: AssetEntry[];
 }
 
-const KINDS: readonly AssetKind[] = ["font", "sample", "model", "wasm"];
+const KINDS: readonly AssetKind[] = ["font", "sample", "model", "wasm", "wasm-loader"];
 
 export function isSafeAssetPath(path: unknown): path is string {
   if (typeof path !== "string" || path === "") return false;
@@ -44,6 +56,17 @@ function validateEntry(v: unknown, i: number): Result<AssetEntry> {
   if (typeof v.license !== "string" || v.license === "") return fail(`${at}.license is missing.`);
   if (!isSafeAssetPath(v.licenseFile)) return fail(`${at}.licenseFile is invalid.`);
   if (!isObj(v.source) || typeof v.source.upstream !== "string") return fail(`${at}.source.upstream is missing.`);
+  if (v.kind === "sample") {
+    const m = v.sample;
+    const num = (x: unknown, min: number, max: number) => typeof x === "number" && Number.isFinite(x) && x >= min && x <= max;
+    if (
+      !isObj(m) || typeof m.instrument !== "string" || !Number.isInteger(m.rootMidi) || !num(m.rootMidi, 0, 127) ||
+      !Number.isInteger(m.velocityLayer) || !num(m.velocityLayer, 1, 16) || !num(m.attackOffsetSec, 0, 1) ||
+      !num(m.durationSec, 0.01, 600) || !num(m.decodedBytesEstimate, 1, Number.MAX_SAFE_INTEGER)
+    ) {
+      return fail(`${at}.sample metadata is invalid.`);
+    }
+  }
   return ok(v as unknown as AssetEntry);
 }
 

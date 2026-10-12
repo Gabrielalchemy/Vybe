@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import type { SessionController, SessionSnapshot } from "../../app/sessionController";
 import type { HandRole } from "../../domain/events";
 import { minimumTargetSizeProblem, type LayoutDefinition, type LayoutTarget } from "../../domain/layout";
@@ -25,13 +25,17 @@ interface LaneProps {
   layout: LayoutDefinition;
   describe: (target: LayoutTarget) => TargetView;
   onSizeProblem: (hand: HandRole, problem: string | null) => void;
+  /** Reports the playing surface's pixel size (hover hysteresis and reflow disarm). */
+  onSurfaceSize?: (hand: HandRole, size: { width: number; height: number }) => void;
+  /** Hand cursor/hover overlay drawn inside the surface. */
+  overlay?: ReactNode;
 }
 
 /**
  * Renders a lane from its LayoutDefinition. Positions come from the same
  * normalized rectangles used for hit testing, so visible and hit geometry agree.
  */
-export function Lane({ session, snapshot, hand, title, layout, describe, onSizeProblem }: LaneProps) {
+export function Lane({ session, snapshot, hand, title, layout, describe, onSizeProblem, onSurfaceSize, overlay }: LaneProps) {
   const ref = useRef<HTMLDivElement>(null);
   const pointerTarget = useRef<string | null>(null);
   const keyTarget = useRef<string | null>(null);
@@ -43,10 +47,11 @@ export function Lane({ session, snapshot, hand, title, layout, describe, onSizeP
       if (!entry) return;
       const { width, height } = entry.contentRect;
       onSizeProblem(hand, minimumTargetSizeProblem(layout, { width, height }));
+      onSurfaceSize?.(hand, { width: Math.round(width), height: Math.round(height) });
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hand, layout, onSizeProblem]);
+  }, [hand, layout, onSizeProblem, onSurfaceSize]);
 
   const lane = snapshot.lanes[hand];
   const sounding = new Map(snapshot.soundingTargets.filter((t) => t.hand === hand).map((t) => [t.targetId, t]));
@@ -131,6 +136,7 @@ export function Lane({ session, snapshot, hand, title, layout, describe, onSizeP
             </button>
           );
         })}
+        {overlay}
       </div>
     </section>
   );

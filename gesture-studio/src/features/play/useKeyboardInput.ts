@@ -8,7 +8,7 @@ import { isTypingTarget, targetForKey } from "./keyboardMap";
  * pressed by one key is released only by that same key, so pressing a second
  * key for the same hand cannot release the first note. Focus loss releases all.
  */
-export function useKeyboardInput(session: SessionController, onOctave: (delta: -1 | 1) => void): void {
+export function useKeyboardInput(session: SessionController, onOctave: (delta: -1 | 1) => void, stopEverything: () => void): void {
   useEffect(() => {
     const heldKey: Record<HandRole, string | null> = { left: null, right: null };
 
@@ -26,7 +26,7 @@ export function useKeyboardInput(session: SessionController, onOctave: (delta: -
       if (e.key === "Escape") {
         heldKey.left = null;
         heldKey.right = null;
-        session.stopAll();
+        stopEverything();
         return; // Overlays may still close on the same key afterwards.
       }
       if (e.ctrlKey || e.metaKey || e.altKey || isTypingTarget(e.target)) return;
@@ -69,5 +69,5 @@ export function useKeyboardInput(session: SessionController, onOctave: (delta: -
       window.removeEventListener("blur", releaseAll);
       releaseAll();
     };
-  }, [session, onOctave]);
+  }, [session, onOctave, stopEverything]);
 }

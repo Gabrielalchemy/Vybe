@@ -1,12 +1,15 @@
 import type { PerformanceEvent } from "../domain/events";
 import { openRepository } from "../persistence/indexedDbRepository";
+import { BrowserTrackingSource } from "../runtime/tracking/browserTrackingSource";
+import { AudioRuntime } from "./audioRuntime";
+import { HandControl } from "./handControl";
 import { ProjectSession } from "./projectSession";
 import { SessionController, type PerformanceSink } from "./sessionController";
 
 const MAX_LOGGED_EVENTS = 200;
 
 /**
- * Phase 2 sink: there is no audio engine yet, so events are recorded for the
+ * Until the audio engine exists (Phase 4), events are recorded for the
  * diagnostics view only. The UI states plainly that sound is not available.
  */
 export class DiagnosticEventLog implements PerformanceSink {
@@ -28,31 +31,74 @@ export class DiagnosticEventLog implements PerformanceSink {
   }
 }
 
+/** Delivers each event batch to every sink; a failing sink cannot block the others. */
+class FanoutSink implements PerformanceSink {
+  constructor(private readonly sinks: PerformanceSink[]) {}
+  dispatch(events: readonly PerformanceEvent[]): void {
+    for (const sink of this.sinks) {
+      try {
+        sink.dispatch(events);
+      } catch (error) {
+        console.error("Performance sink failed", error);
+      }
+    }
+  }
+}
+
 export interface AppRuntime {
   session: SessionController;
+  audio: AudioRuntime;
   eventLog: DiagnosticEventLog;
   project: Promise<ProjectSession>;
-  /** Session clock origin; there is no AudioContext before Phase 4. */
-  clock: "session-monotonic";
+  handControl: HandControl;
+  /** Camera preview element owned by the tracking source. */
+  cameraVideo: HTMLVideoElement;
+  /** Stop all: release every live voice, clear pedals, cut decaying tails. */
+  stopEverything: () => void;
 }
 
 const randomId = () => crypto.randomUUID();
 
 export function createAppRuntime(): AppRuntime {
   const eventLog = new DiagnosticEventLog();
+  // The session is created first; the audio runtime calls back into it.
+  let sessionRef: SessionController | null = null;
+  const audio = new AudioRuntime({
+    onInterrupted: () => sessionRef?.interrupt("audio-interrupted"),
+    onVoiceStolen: (id) => sessionRef?.voiceStolen(id),
+  });
   const session = new SessionController({
-    sink: eventLog,
-    nowSec: () => performance.now() / 1000,
+    // Audio is dispatched before the diagnostic log.
+    sink: new FanoutSink([audio, eventLog]),
+    // The audio clock owns musical time once sound has started.
+    nowSec: () => audio.nowSec(),
     nowMs: () => performance.now(),
     newId: randomId,
   });
+  sessionRef = session;
   const nowIso = () => new Date().toISOString();
-  const project = openRepository({ factory: globalThis.indexedDB, nowIso }).then((repo) =>
-    ProjectSession.open({ repo, nowIso, newId: randomId }),
-  );
+  const repo = openRepository({ factory: globalThis.indexedDB, nowIso });
+  const project = repo.then((r) => ProjectSession.open({ repo: r, nowIso, newId: randomId }));
   void project.then((p) => {
     const { scene } = p.state().project;
     session.loadScene({ ...scene, id: scene.sourcePresetId, name: "" });
   });
-  return { session, eventLog, project, clock: "session-monotonic" };
+  const source = new BrowserTrackingSource();
+  const handControl = new HandControl({
+    session,
+    repo,
+    source,
+    nowMs: () => performance.now(),
+    nowIso,
+    every: (ms, fn) => {
+      const id = setInterval(fn, ms);
+      return () => clearInterval(id);
+    },
+    audio,
+  });
+  const stopEverything = () => {
+    session.stopAll();
+    audio.panic();
+  };
+  return { session, audio, eventLog, project, handControl, cameraVideo: source.video, stopEverything };
 }

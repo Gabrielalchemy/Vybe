@@ -90,6 +90,11 @@ export class LiveRouter {
     if (lane.state === "disarmed") lane.state = "open";
   }
 
+  /** The audio engine stole this voice at the voice limit. */
+  forgetVoice(voiceId: string): PerformanceEvent[] {
+    return this.registry.forget(voiceId, "voice-limit", this.nowSec());
+  }
+
   setSustain(hand: HandRole, down: boolean): PerformanceEvent[] {
     return this.registry.setSustain(LIVE_SOURCE_BY_HAND[hand], down, this.nowSec());
   }

@@ -89,3 +89,15 @@ describe("VoiceRegistry flush", () => {
     expect(registry.activeVoices()).toEqual([]);
   });
 });
+
+describe("VoiceRegistry steal", () => {
+  it("forgets a voice cut at the voice limit and records why", () => {
+    const v = on("live-right", 60);
+    expect(registry.forget(v.voiceId, "voice-limit", 2)).toEqual([
+      { kind: "voice-release", voiceId: v.voiceId, source: "live-right", reason: "voice-limit", audioTimeSec: 2 },
+    ]);
+    expect(registry.activeVoices()).toEqual([]);
+    expect(registry.forget(v.voiceId, "voice-limit", 3)).toEqual([]);
+  });
+});
+
