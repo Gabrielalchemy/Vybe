@@ -149,5 +149,14 @@ describe("SessionController", () => {
     expect(dispatched.flat().some((e) => e.kind === "voice-release" && e.voiceId === voiceId && e.reason === "voice-limit")).toBe(true);
     expect(session.snapshot().soundingNotes).toHaveLength(3);
   });
+
+  it("publishes each outcome to outcome listeners as it happens", () => {
+    const seen: string[] = [];
+    session.onOutcome((o) => seen.push(`${o.hand}:${o.action}:${o.status}:${o.input}`));
+    session.armCamera("right");
+    session.press("right", "melody-pc-0", "camera");
+    session.release("right", "camera");
+    expect(seen).toEqual(["right:press:sounded:camera", "right:release:released:camera"]);
+  });
 });
 

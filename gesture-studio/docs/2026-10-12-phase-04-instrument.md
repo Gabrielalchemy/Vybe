@@ -94,18 +94,33 @@ Preconditions:
    - Make 100 deliberate single pinches on one key at about 1 per second.
    - For each one, measure from the first video frame where thumb and index touch to the audible onset in the recording.
    - Report the median, p95, min, max and n, plus the in-app "Frame to note sent" and browser latency estimates, labelled as component values.
-2. **Trigger accuracy:**
-   - Over three sessions, perform at least 500 attempts on prompted targets across both lanes and all pads.
-   - Log intended versus observed (Settings → Diagnostics → Recent input).
-   - Report correct, missed, wrong-target and duplicate counts separately.
-3. **Accidental notes:** five minutes of neutral movement (repositioning, resting, gesturing without pinching), counting any notes that sound.
+2. **Trigger accuracy:** in Settings → Diagnostics → Instrument trials, enter the conditions and run accuracy trials in at least three sessions (for example 170 + 170 + 170 attempts) until the totals show at least 500 attempts. Export the results.
+3. **Accidental notes:** run the 5-minute neutral test, moving, repositioning and resting naturally without pinching to play.
 4. **Loss release:** while holding a chord with sustain down (Left Shift), move the hand out of view. The sound should stop within about 200 ms; video can confirm this. Repeat with the hands crossing.
 5. **Comfort:** a 20-minute session with ordinary rests. Note reach, pinch fatigue and posture.
 
 Measured inputs so far (Phase 3 measurements 1–2): ~40 ms tracking turnaround on GPU, and a camera at 15 fps in the evening. The estimated software path at 30 fps is ~120–140 ms, so the physical-response item is at risk.
 
+## Trial helper (added 2026-10-12)
+
+Settings → Diagnostics → **Instrument trials** turns the gate's counting into recorded evidence:
+
+- **Accuracy trial** (50, 100, 170 or 200 attempts).
+  - Prompts are balanced across hands and cycle through every melody key and every filled chord pad (empty pads are never prompted). The order is shuffled from a seed that is saved with the session.
+  - The prompted pad is marked with a dashed outline drawn from the hit-testing layout, and a bar above the lanes names the hand and target.
+  - Each attempt records the intended and observed target, response time, duplicates and other-hand presses.
+  - Scoring: the first confirmed pinch on the prompted hand is *correct* or *wrong target* (closing over a gap counts as wrong); no pinch within 8 s is *missed*; another press on that hand within 400 ms of the release is a *duplicate*; presses by the other hand are counted separately.
+- **5-minute neutral test:** counts every camera pinch that sounded (accidental notes) and every pinch at all.
+- **Camera input only.** Keyboard and pointer input never count. Trials need hand control to be active.
+- **Saving:** finished sessions are saved locally with the conditions text and environment (browser, delegate, calibration date, camera mode, the output-latency estimate). Stopping early saves nothing.
+- **Totals and export:** cumulative totals are shown against the gate thresholds. **Export results (JSON)** downloads every session for the dated evidence file.
+
+Tests: pure scoring (10 tests: seeding and balance, correct, wrong and gap, duplicates, missed, other hand, keyboard ignored, summary by hand, early stop, neutral timing). Controller (6 tests: refusal without hand control, filled pads only, persistence with environment and seed, neutral counting of sounded notes, early stop saves nothing, totals after reload). Browser: refusal message, totals and axe scan.
+
+The counts are evidence for the owner's review. The tool does not declare the gate passed.
+
 ## Remaining work
 
 - The owner runs the gate procedures above.
 - Run the production-build e2e (strict CSP) once port 4173 is free.
-- Optional tooling for the 500-attempt trial: an in-app prompted-target trial that logs intended/observed counts. It is not built yet; I recommend it before step 2.
+- Gate procedure steps 2–3 can now use the trial helper above.

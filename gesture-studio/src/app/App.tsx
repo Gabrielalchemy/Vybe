@@ -70,7 +70,7 @@ function useProject(runtime: AppRuntime) {
 }
 
 export function App({ runtime }: { runtime: AppRuntime }) {
-  const { session, handControl, audio, stopEverything } = runtime;
+  const { session, handControl, audio, trials, stopEverything } = runtime;
   const snapshot = useSyncExternalStore(
     (notify) => session.subscribe(() => notify()),
     () => session.peek(),
@@ -78,6 +78,10 @@ export function App({ runtime }: { runtime: AppRuntime }) {
   const handSnapshot = useSyncExternalStore(
     (notify) => handControl.subscribe(() => notify()),
     () => handControl.snapshot(),
+  );
+  const trialSnapshot = useSyncExternalStore(
+    (notify) => trials.subscribe(() => notify()),
+    () => trials.snapshot(),
   );
   const audioSnapshot = useSyncExternalStore(
     (notify) => audio.subscribe(() => notify()),
@@ -219,6 +223,8 @@ export function App({ runtime }: { runtime: AppRuntime }) {
             handControl={handControl}
             handSnapshot={handSnapshot}
             cameraVideo={runtime.cameraVideo}
+            trials={trials}
+            trialSnapshot={trialSnapshot}
           />
         )}
         {workspace === "practice" && (

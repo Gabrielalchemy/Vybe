@@ -79,6 +79,7 @@ export class SessionController {
   /** voiceId -> target that produced it, for pad state display. */
   private readonly voiceTargets = new Map<string, { hand: HandRole; targetId: string }>();
   private readonly listeners = new Set<(s: SessionSnapshot) => void>();
+  private readonly outcomeListeners = new Set<(o: OutcomeRecord) => void>();
   private current: SessionSnapshot | null = null;
 
   constructor(deps: SessionDeps) {
@@ -90,6 +91,12 @@ export class SessionController {
     this.listeners.add(listener);
     if (this.current) this.safeNotify(listener, this.current);
     return () => this.listeners.delete(listener);
+  }
+
+  /** Every intent outcome as it happens (trials, practice feedback). Listener failures are isolated. */
+  onOutcome(listener: (o: OutcomeRecord) => void): () => void {
+    this.outcomeListeners.add(listener);
+    return () => this.outcomeListeners.delete(listener);
   }
 
   /** The latest snapshot, or null before a scene is loaded. */
@@ -248,7 +255,7 @@ export class SessionController {
   private finish(outcome: IntentOutcome): IntentOutcome {
     this.dispatch(outcome.events);
     const { intent } = outcome;
-    this.outcomes.push({
+    const record: OutcomeRecord = {
       atMs: intent.requestedAtMs,
       hand: intent.hand,
       input: intent.input,
@@ -257,7 +264,15 @@ export class SessionController {
       status: outcome.status,
       detail: "reason" in outcome ? outcome.reason : null,
       notes: outcome.status === "sounded" ? outcome.notes : [],
-    });
+    };
+    this.outcomes.push(record);
+    for (const l of this.outcomeListeners) {
+      try {
+        l(record);
+      } catch (error) {
+        console.error("Outcome listener failed", error);
+      }
+    }
     if (this.outcomes.length > MAX_OUTCOMES) this.outcomes = this.outcomes.slice(-MAX_OUTCOMES);
     this.publish();
     return outcome;

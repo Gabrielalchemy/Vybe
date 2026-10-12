@@ -5,6 +5,7 @@ import { pitchName } from "../../domain/pitch";
 import { SimulatorPanel } from "../dev/SimulatorPanel";
 import { AudioSettings } from "./AudioSettings";
 import { CameraSettings } from "./CameraSettings";
+import { TrialSettings } from "../trials/TrialSettings";
 
 interface Props {
   open: boolean;
@@ -94,6 +95,7 @@ export function SettingsDialog({ open, onClose, runtime, snapshot }: Props) {
         <section className="settings-group" aria-labelledby="sg-diagnostics">
           <h3 id="sg-diagnostics">Diagnostics</h3>
           <Diagnostics runtime={runtime} snapshot={snapshot} />
+          <TrialSettings trials={runtime.trials} onStarted={onClose} />
           {import.meta.env.DEV && <SimulatorPanel session={runtime.session} />}
         </section>
       </div>

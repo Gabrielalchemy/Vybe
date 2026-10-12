@@ -399,3 +399,42 @@ kbd {
   .calibration { grid-template-columns: 1fr; }
 }
 .transport__error { color: var(--status-danger); gap: var(--space-2); }
+
+/* Instrument trials */
+.trial-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-interactive);
+  border-radius: var(--radius-panel);
+  background: var(--bg-surface);
+}
+.trial-bar__prompt { flex: 1; font: 500 18px/26px var(--font-ui); }
+.trial-target {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  border: 3px dashed var(--text-primary);
+  border-radius: var(--radius-key);
+}
+.trial-target__label {
+  position: absolute;
+  bottom: var(--space-1);
+  left: var(--space-1);
+  font: 600 12px/16px var(--font-ui);
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+  padding: 0 var(--space-1);
+}
+.trials { display: grid; gap: var(--space-3); }
+.field input[type="text"] {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  background: var(--bg-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-interactive);
+  border-radius: var(--radius-control);
+  font: 400 14px/20px var(--font-ui);
+}
+.field--inline { grid-auto-flow: column; align-items: center; gap: var(--space-2); }

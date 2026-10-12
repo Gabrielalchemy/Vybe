@@ -3,6 +3,9 @@ import type { HandControl, HandControlSnapshot } from "../../app/handControl";
 import type { SessionController, SessionSnapshot } from "../../app/sessionController";
 import { CameraPanel } from "../camera/CameraPanel";
 import { HandOverlay } from "../camera/HandOverlay";
+import type { TrialController, TrialSnapshot } from "../../app/trialController";
+import { TrialBar } from "../trials/TrialBar";
+import { TrialTarget } from "../trials/TrialTarget";
 import type { HandRole } from "../../domain/events";
 import { CHORD_LAYOUT, MELODY_LAYOUT, type LayoutTarget } from "../../domain/layout";
 import { melodyOctaveNotes, pitchName } from "../../domain/pitch";
@@ -19,9 +22,12 @@ interface PlayViewProps {
   handControl: HandControl;
   handSnapshot: HandControlSnapshot;
   cameraVideo: HTMLVideoElement;
+  trials: TrialController;
+  trialSnapshot: TrialSnapshot;
 }
 
-export function PlayView({ session, snapshot, onOctave, octaveMessage, handControl, handSnapshot, cameraVideo }: PlayViewProps) {
+export function PlayView({ session, snapshot, onOctave, octaveMessage, handControl, handSnapshot, cameraVideo, trials, trialSnapshot }: PlayViewProps) {
+  const prompt = trialSnapshot.running?.prompt ?? null;
   const [sizeProblems, setSizeProblems] = useState<Record<HandRole, string | null>>({ left: null, right: null });
   const onSizeProblem = useCallback((hand: HandRole, problem: string | null) => {
     setSizeProblems((prev) => (prev[hand] === problem ? prev : { ...prev, [hand]: problem }));
@@ -71,6 +77,7 @@ export function PlayView({ session, snapshot, onOctave, octaveMessage, handContr
           <span aria-hidden="true">▲ </span>Enlarge the window to use both hand areas. {sizeProblem} The keyboard still works.
         </p>
       )}
+      <TrialBar trials={trials} snapshot={trialSnapshot} session={snapshot} />
       <div className="play__lanes">
         <Lane
           session={session}
@@ -81,7 +88,12 @@ export function PlayView({ session, snapshot, onOctave, octaveMessage, handContr
           describe={describeChord}
           onSizeProblem={onSizeProblem}
           onSurfaceSize={onSurfaceSize}
-          overlay={<HandOverlay handControl={handControl} hand="left" layout={CHORD_LAYOUT} />}
+          overlay={
+            <>
+              {prompt?.hand === "left" && <TrialTarget layout={CHORD_LAYOUT} targetId={prompt.targetId} />}
+              <HandOverlay handControl={handControl} hand="left" layout={CHORD_LAYOUT} />
+            </>
+          }
         />
         <Lane
           session={session}
@@ -92,7 +104,12 @@ export function PlayView({ session, snapshot, onOctave, octaveMessage, handContr
           describe={describeMelody}
           onSizeProblem={onSizeProblem}
           onSurfaceSize={onSurfaceSize}
-          overlay={<HandOverlay handControl={handControl} hand="right" layout={MELODY_LAYOUT} />}
+          overlay={
+            <>
+              {prompt?.hand === "right" && <TrialTarget layout={MELODY_LAYOUT} targetId={prompt.targetId} />}
+              <HandOverlay handControl={handControl} hand="right" layout={MELODY_LAYOUT} />
+            </>
+          }
         />
       </div>
       <div className="play__footer">

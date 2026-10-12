@@ -5,6 +5,7 @@ import { AudioRuntime } from "./audioRuntime";
 import { HandControl } from "./handControl";
 import { ProjectSession } from "./projectSession";
 import { SessionController, type PerformanceSink } from "./sessionController";
+import { TrialController } from "./trialController";
 
 const MAX_LOGGED_EVENTS = 200;
 
@@ -51,6 +52,7 @@ export interface AppRuntime {
   eventLog: DiagnosticEventLog;
   project: Promise<ProjectSession>;
   handControl: HandControl;
+  trials: TrialController;
   /** Camera preview element owned by the tracking source. */
   cameraVideo: HTMLVideoElement;
   /** Stop all: release every live voice, clear pedals, cut decaying tails. */
@@ -96,9 +98,34 @@ export function createAppRuntime(): AppRuntime {
     },
     audio,
   });
+  const trials = new TrialController({
+    session,
+    repo,
+    nowMs: () => performance.now(),
+    nowIso,
+    every: (ms, fn) => {
+      const id = setInterval(fn, ms);
+      return () => clearInterval(id);
+    },
+    environment: () => {
+      const hand = handControl.snapshot();
+      const cam = hand.camera;
+      const profile = hand.calibration.status === "ready" ? hand.calibration.profile : null;
+      return {
+        handControlActive: hand.phase === "active",
+        browser: navigator.userAgent,
+        delegate: hand.delegate,
+        calibratedAt: profile?.createdAt ?? null,
+        camera: cam ? `${cam.label} ${cam.width}x${cam.height}${cam.frameRate ? ` @${Math.round(cam.frameRate)}` : ""}` : null,
+        outputLatencyMs: audio.snapshot().outputLatencyMs,
+      };
+    },
+    seed: () => crypto.getRandomValues(new Uint32Array(1))[0] ?? 1,
+  });
+  void trials.load();
   const stopEverything = () => {
     session.stopAll();
     audio.panic();
   };
-  return { session, audio, eventLog, project, handControl, cameraVideo: source.video, stopEverything };
+  return { session, audio, eventLog, project, handControl, trials, cameraVideo: source.video, stopEverything };
 }
