@@ -9,6 +9,10 @@ import type { HandRole } from "../events";
 export const PROMPT_TIMEOUT_MS = 8000;
 /** A press on the prompted hand this soon after the release is a duplicate trigger. */
 export const DUPLICATE_WINDOW_MS = 400;
+/** The result is shown this long before the next prompt; presses meanwhile are not scored. */
+export const FEEDBACK_MS = 1000;
+/** Faster than human reaction to a new prompt: the press was not a response to it. */
+export const ANTICIPATION_MS = 150;
 
 export interface Prompt {
   hand: HandRole;
@@ -26,6 +30,8 @@ export type TrialInput =
       input: InputKind;
       /** Whether the press produced sound; defaults to "had a target". */
       sounded?: boolean;
+      /** Lane-local cursor position at the press, for diagnosing near misses. */
+      cursor?: { x: number; y: number } | null;
     }
   | { kind: "release"; hand: HandRole; atMs: number; input: InputKind };
 
@@ -41,6 +47,9 @@ export interface Attempt {
   responseMs: number | null;
   duplicates: number;
   otherHandPresses: number;
+  /** Pressed sooner after the prompt than a person can react. */
+  anticipatory: boolean;
+  cursor: { x: number; y: number } | null;
 }
 
 interface HandCounts {
@@ -59,6 +68,9 @@ export interface AccuracySummary {
   missed: number;
   duplicates: number;
   otherHandPresses: number;
+  /** Presses during the feedback pause (often corrections); not scored. */
+  betweenAttemptPresses: number;
+  anticipatory: number;
   correctRate: number | null;
   byHand: Record<HandRole, HandCounts>;
 }
@@ -107,10 +119,12 @@ export function buildPrompts(opts: { count: number; seed: number; filledChordSlo
   return shuffle([...left, ...right], next);
 }
 
+type Pressed = { observed: string | null; responseMs: number; cursor: { x: number; y: number } | null };
 type Phase =
   | { kind: "waiting"; sinceMs: number }
-  | { kind: "held"; sinceMs: number; observed: string | null; responseMs: number }
-  | { kind: "settling"; releasedMs: number; observed: string | null; responseMs: number; extraHeld: boolean };
+  | ({ kind: "held"; sinceMs: number } & Pressed)
+  | ({ kind: "settling"; releasedMs: number; extraHeld: boolean } & Pressed)
+  | { kind: "feedback"; untilMs: number; attempt: Attempt };
 
 const emptyCounts = (): HandCounts => ({ attempts: 0, correct: 0, wrong: 0, missed: 0, duplicates: 0 });
 
@@ -121,6 +135,7 @@ export class TrialSession {
   private phase: Phase;
   private duplicates = 0;
   private otherHand = 0;
+  private betweenAttempts = 0;
   private readonly done: Attempt[] = [];
   private ended = false;
   // Neutral mode.
@@ -151,9 +166,14 @@ export class TrialSession {
   }
 
   current(): (Prompt & { index: number; total: number }) | null {
-    if (this.ended || this.kind !== "accuracy") return null;
+    if (this.ended || this.kind !== "accuracy" || this.phase.kind === "feedback") return null;
     const p = this.prompts[this.index];
     return p ? { ...p, index: this.index, total: this.prompts.length } : null;
+  }
+
+  /** The attempt just scored, while its result is on screen. */
+  feedback(): Attempt | null {
+    return !this.ended && this.phase.kind === "feedback" ? this.phase.attempt : null;
   }
 
   attempts(): readonly Attempt[] {
@@ -179,6 +199,10 @@ export class TrialSession {
     }
     const prompt = this.prompts[this.index];
     if (!prompt) return;
+    if (this.phase.kind === "feedback") {
+      if (e.kind === "press") this.betweenAttempts += 1;
+      return;
+    }
     if (e.hand !== prompt.hand) {
       if (e.kind === "press") this.otherHand += 1;
       return;
@@ -186,13 +210,13 @@ export class TrialSession {
     const p = this.phase;
     if (e.kind === "press") {
       if (p.kind === "waiting") {
-        this.phase = { kind: "held", sinceMs: e.atMs, observed: e.targetId, responseMs: e.atMs - p.sinceMs };
+        this.phase = { kind: "held", sinceMs: e.atMs, observed: e.targetId, responseMs: e.atMs - p.sinceMs, cursor: e.cursor ?? null };
       } else if (p.kind === "settling") {
         this.duplicates += 1;
         this.phase = { ...p, extraHeld: true };
       }
     } else if (p.kind === "held") {
-      this.phase = { kind: "settling", releasedMs: e.atMs, observed: p.observed, responseMs: p.responseMs, extraHeld: false };
+      this.phase = { kind: "settling", releasedMs: e.atMs, observed: p.observed, responseMs: p.responseMs, cursor: p.cursor, extraHeld: false };
     } else if (p.kind === "settling" && p.extraHeld) {
       this.phase = { ...p, releasedMs: e.atMs, extraHeld: false };
     }
@@ -207,10 +231,12 @@ export class TrialSession {
     const prompt = this.prompts[this.index];
     if (!prompt) return;
     const p = this.phase;
-    if (p.kind === "waiting" && nowMs - p.sinceMs > PROMPT_TIMEOUT_MS) {
-      this.complete(prompt, null, "missed", null, nowMs);
+    if (p.kind === "feedback") {
+      if (nowMs >= p.untilMs) this.phase = { kind: "waiting", sinceMs: p.untilMs };
+    } else if (p.kind === "waiting" && nowMs - p.sinceMs > PROMPT_TIMEOUT_MS) {
+      this.complete(prompt, { observed: null, responseMs: null, cursor: null }, "missed", nowMs);
     } else if (p.kind === "settling" && !p.extraHeld && nowMs - p.releasedMs >= DUPLICATE_WINDOW_MS) {
-      this.complete(prompt, p.observed, p.observed === prompt.targetId ? "correct" : "wrong", p.responseMs, nowMs);
+      this.complete(prompt, p, p.observed === prompt.targetId ? "correct" : "wrong", nowMs);
     }
   }
 
@@ -224,7 +250,7 @@ export class TrialSession {
       return { kind: "neutral", durationMs: this.durationMs, accidentalNotes: this.neutralNotes, accidentalAttempts: this.neutralAttempts };
     }
     const byHand: Record<HandRole, HandCounts> = { left: emptyCounts(), right: emptyCounts() };
-    const total = { correct: 0, wrong: 0, missed: 0, duplicates: 0, other: 0 };
+    const total = { correct: 0, wrong: 0, missed: 0, duplicates: 0, other: 0, anticipatory: 0 };
     for (const a of this.done) {
       const h = byHand[a.hand];
       h.attempts += 1;
@@ -233,6 +259,7 @@ export class TrialSession {
       total[a.result] += 1;
       total.duplicates += a.duplicates;
       total.other += a.otherHandPresses;
+      if (a.anticipatory) total.anticipatory += 1;
     }
     return {
       kind: "accuracy",
@@ -242,26 +269,36 @@ export class TrialSession {
       missed: total.missed,
       duplicates: total.duplicates,
       otherHandPresses: total.other,
+      betweenAttemptPresses: this.betweenAttempts,
+      anticipatory: total.anticipatory,
       correctRate: this.done.length ? total.correct / this.done.length : null,
       byHand,
     };
   }
 
-  private complete(prompt: Prompt, observed: string | null, result: AttemptResult, responseMs: number | null, nowMs: number): void {
-    this.done.push({
+  private complete(
+    prompt: Prompt,
+    pressed: { observed: string | null; responseMs: number | null; cursor: { x: number; y: number } | null },
+    result: AttemptResult,
+    nowMs: number,
+  ): void {
+    const attempt: Attempt = {
       index: this.index,
       hand: prompt.hand,
       intendedTargetId: prompt.targetId,
-      observedTargetId: observed,
+      observedTargetId: pressed.observed,
       result,
-      responseMs,
+      responseMs: pressed.responseMs,
       duplicates: this.duplicates,
       otherHandPresses: this.otherHand,
-    });
+      anticipatory: pressed.responseMs !== null && pressed.responseMs < ANTICIPATION_MS,
+      cursor: pressed.cursor,
+    };
+    this.done.push(attempt);
     this.index += 1;
     this.duplicates = 0;
     this.otherHand = 0;
-    this.phase = { kind: "waiting", sinceMs: nowMs };
+    this.phase = { kind: "feedback", untilMs: nowMs + FEEDBACK_MS, attempt };
     if (this.index >= this.prompts.length) this.ended = true;
   }
 }

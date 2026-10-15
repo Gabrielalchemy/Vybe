@@ -119,6 +119,89 @@ Tests: pure scoring (10 tests: seeding and balance, correct, wrong and gap, dupl
 
 The counts are evidence for the owner's review. The tool does not declare the gate passed.
 
+## 2026-10-13 — production tests and the camera frame-rate finding
+
+**Production build.** The browser tests that need the dev server (they import source modules or dev fixtures) are now tagged `@dev`. `npm run test:e2e:prod` builds nothing itself: it starts `npm run start`, runs every other test against the production build under the strict CSP, and refuses to run if port 4173 is already taken. **31 passed**, including loading the full grand piano, the missing-sample error and the camera paths.
+
+**Why the camera ran at 15 fps.** The webcam's V4L2 controls were read with an `ioctl` query only; no video was streamed and no frames were captured.
+- `Exposure, Dynamic Framerate` is **1**, while the driver default is 0. With auto exposure (`Auto Exposure` = 3, aperture priority), this lets the camera lengthen exposure in dim light by halving its frame rate. This matches the 15 fps observed in both owner measurements.
+- Formats: MJPG 1280×720 at 30 or 15 fps; YUYV only up to 640×480. Manual exposure range 40–10000 (100 µs units). Gain 0–4.
+
+**Change: "Steady 30 frames per second"** (Settings → Camera & calibration). Off by default; the preference is remembered.
+- **On:** applies manual exposure capped at one frame period (≤ 333 × 100 µs, clamped to the camera's range) to Vybe's own stream through Image Capture constraints. The system-wide camera setting is not changed.
+- **Off:** restarts the camera stream rather than relying on switching a running stream back to automatic. Hand control returns to the readiness check.
+- Settings → Live tracking now shows the exposure mode and time the camera reports, so the effect can be checked on the real camera.
+
+Verification:
+- Unit tests: the constraint calculation (3), plus orchestration (off by default, remembered and reapplied, off restarts the stream, unsupported camera reported).
+- Browser test with Chromium's synthetic camera: manual exposure applied and clamped to its range (100); off restarts the camera.
+- Limitation: the synthetic camera always reports "manual", so the return to automatic exposure, and whether the real camera then delivers 30 fps, are **manual validation pending** on the owner's camera.
+
+Owner check: Settings → turn on Steady 30 frames per second. "Camera frames" should read about 30 per second and "Exposure" should read manual at about 33 ms. Then see whether tracking still works in your lighting (a darker image), and run Measure tracking speed again.
+
+## Owner measurement 3 — Steady 30 on (2026-10-13, about 21:10 EAT)
+
+Conditions: Chrome 155 (Flatpak); HP HD Camera 1280×720; GPU delegate (Intel UHD); calibration saved 2026-10-12 21:31 (suggested tempo 40 BPM). **Steady 30 on, with exposure manual at 33.3 ms (a full frame period).** Power and output device were not recorded.
+
+| Delegate | Frame to result, median / 95th | Results/s |
+|---|---|---|
+| CPU | 83 / 105 ms | 10.0 |
+| GPU (selected) | 31 / 38 ms | 18.5 |
+
+Live tracking: camera frames **25.0/s** (was 15); tracking results 23.5/s; inference median 26 ms, 95th 33 ms; frame to result median 27 ms, 95th 35 ms; 1 stale; 0 skipped. Frame to note sent: no camera presses yet in that session.
+
+Findings:
+- Manual exposure removed the low-light halving. 25 fps rather than 30 is consistent with an exposure equal to the whole frame period leaving no readout time.
+- **Change:** the cap is now 80% of a frame period (26.6 ms). Expect about 30 fps with a slightly darker image. The owner should recheck by turning the setting off and on.
+- Tracking turnaround nearly halved compared with measurement 2 (40 → 27 ms median). Fewer detections need the palm detector at a steady frame rate, but the conditions differ, so this is not attributed to one cause.
+- Software-path estimate, not a physical measurement: at 25 fps about 110 ms median before audio output; at 30 fps about 100 ms. That is at the target boundary; the filmed measurement decides.
+
+## 2026-10-13, 21:30 — dark picture with Steady 30 (fixed)
+
+Owner report: with Steady 30 on (exposure 26.6 ms) the evening picture was nearly black and calibration failed with "could not tell which hand this is".
+
+- **Cause 1, light:** at night the camera's automatic exposure had been using up to about 66 ms per frame. At 26.6 ms, with gain 0 (the maximum is 4, and Chrome on Linux exposes no gain control), the picture is about 2.5× too dark. The scene was also lit from behind.
+- **Cause 2, a defect in my implementation:** the webcam keeps exposure settings in the device between uses. "Off" restarted the stream but never asked for automatic exposure, so the device stayed on manual 26.6 ms.
+
+Fixes:
+- **Immediate:** the device's `Auto Exposure` was set back to 3 (aperture priority, the device default) with a single V4L2 `S_CTRL`. No frames were captured.
+- **Off** now explicitly requests automatic exposure on the running stream, with no restart. **Every camera start with Steady 30 off** also requests automatic exposure, undoing any leftover manual setting.
+- **Dark-picture guard:** with Steady 30 on, the mean brightness of a 16×9 downscaled frame is checked once per second. After 3 consecutive checks below 0.12, Steady 30 turns itself off with "The picture was too dark to track at a steady 30 frames per second, so automatic exposure is back on. Light your face and hands from the front to use it."
+- Tests: orchestration (explicit automatic exposure on start, off without restart, dark guard after 3 dark seconds but not 2) and the browser camera tests pass. Whether this real camera returns to automatic exposure through Chrome's constraint is still to be confirmed on the owner's machine via the Exposure readout.
+
+## Owner measurement 4 — daylight, Steady 30 at 26.6 ms (2026-10-15, 16:44 EAT)
+
+Conditions: Chrome 155 (Flatpak); HP HD Camera 1280×720; **charging**; daylight. **Steady 30 on: exposure manual at 26.6 ms.** The dark-picture guard did not trigger. Hand control was at the readiness check with the 2026-10-12 calibration; no camera presses yet, so "frame to note sent" is empty. Output device not recorded.
+
+| Delegate | Result | Frame to result, median / 95th (all results) | Results/s |
+|---|---|---|---|
+| CPU | Too late to use (every result over 100 ms) | 132 / 154 ms | 7.0 |
+| GPU (selected) | Worked | 53 / 68 ms | 14.5 |
+
+Live tracking: **camera frames 30.0/s** (the 80% exposure cap reaches the full rate); tracking results 12.0/s; inference median 24 ms, 95th 70 ms; frame to result median 25 ms, 95th 71 ms; 1 stale; 0 skipped.
+
+Findings:
+- Steady 30 now holds 30 fps in daylight without darkening the picture too much to use.
+- Tracking produced only 12 results/s against 30 camera frames/s, with a wide spread (24 ms median, 70 ms at the 95th). One possible cause: with no hands in view, MediaPipe runs its palm detector on every frame, which is slower than following a hand it has already found. Not yet confirmed: the owner should read the rate again with both hands in view while playing before this is treated as a problem.
+
+## Warm-up trial 1 (2026-10-15, 16:50 EAT) — not gate evidence
+
+Conditions: outdoors on a sunny day; GPU; 1280×720 at 30 fps (Steady 30); calibrated 2026-10-15 16:42.
+
+Result: 50 attempts, 35 correct (70%), 9 wrong target, 6 missed, 1 duplicate, 14 other-hand presses. Left hand 16/25; right hand 19/25. Median response 2.2 s.
+
+Per-attempt analysis:
+- **Tool artefact:** two "wrong" presses came 127 ms and 142 ms after the prompt, faster than human reaction. #44's press (chord slot 4, 142 ms after asking for slot 1) re-tried #43's target, slot 4. The 400 ms gap between attempts let corrections land on the next prompt.
+- **Left-hand neighbour errors:** 1→2, 2→3, and 4→3 twice. The leftmost top pad (slot 1) was also missed twice. The left cursor appears to land about one pad off, especially at the left edge of the reach area.
+- **Pinches over gaps:** 2.
+- **Other-hand presses:** 14 in 50 attempts. The resting hand produces confirmed pinches, which is directly relevant to the accidental-note criterion.
+
+Changes to the trial tool (the instrument's behaviour is unchanged):
+- After each attempt the result is shown for 1 s ("✓ Correct" / "✕ You played … the target was …" / "○ Missed") before the next prompt. Presses in that second are counted as *between attempts* and not scored.
+- A press under 150 ms after the prompt is flagged as *too early* (anticipatory).
+- Each attempt records the lane-local cursor position at the press. The environment records each hand's calibrated pinch thresholds and whether Steady 30 was on, so neighbour errors and idle-hand presses can be diagnosed.
+- Tests: scoring 14 (4 new), controller 7 (1 new), plus browser trial and camera tests.
+
 ## Remaining work
 
 - The owner runs the gate procedures above.

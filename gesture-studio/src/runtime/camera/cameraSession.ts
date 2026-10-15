@@ -1,4 +1,5 @@
 import { fail, ok, type Result } from "../../domain/result";
+import { steadyFrameRateConstraints, type ExposureCapabilities } from "../../domain/tracking/exposure";
 
 export type CameraErrorCode = "denied" | "in-use" | "not-found" | "unsupported" | "insecure" | "unknown";
 
@@ -39,6 +40,7 @@ function toCameraError(error: unknown): CameraError {
  */
 export class CameraSession {
   private stream: MediaStream | null = null;
+  private probe: OffscreenCanvas | null = null;
   private endedListener: (() => void) | null = null;
 
   static async listCameras(): Promise<{ deviceId: string; label: string }[]> {
@@ -92,6 +94,65 @@ export class CameraSession {
       height: s.height ?? video.videoHeight,
       frameRate: s.frameRate ?? null,
     });
+  }
+
+  /**
+   * Steady frame rate: manual exposure capped at one frame period (Image Capture
+   * constraints, applied to this stream only). There is no "off": Chrome keeps
+   * manual exposure on a running stream, so callers restart the stream instead.
+   */
+  async setSteadyFrameRate(fps = 30): Promise<Result<void, string>> {
+    const track = this.stream?.getVideoTracks()[0];
+    if (!track) return fail("Turn the camera on first.");
+    const caps = (track.getCapabilities?.() ?? {}) as unknown as ExposureCapabilities;
+    // Image Capture constraint members are not in TypeScript's DOM types.
+    const constraintSet = (c: Record<string, unknown>) => ({ advanced: [c] }) as unknown as MediaTrackConstraints;
+    try {
+      const wanted = steadyFrameRateConstraints(caps, fps);
+      if (!wanted.ok) return wanted;
+      await track.applyConstraints(constraintSet({ ...wanted.value }));
+      return ok(undefined);
+    } catch (error) {
+      return fail(`The camera refused the exposure setting (${error instanceof Error ? error.message : String(error)}).`);
+    }
+  }
+
+  /**
+   * Automatic exposure, applied explicitly: webcams keep a manual exposure set
+   * by an earlier session until something changes it back.
+   */
+  async setAutomaticExposure(): Promise<Result<void, string>> {
+    const track = this.stream?.getVideoTracks()[0];
+    if (!track) return fail("Turn the camera on first.");
+    const caps = (track.getCapabilities?.() ?? {}) as unknown as ExposureCapabilities;
+    if (!caps.exposureMode?.includes("continuous")) return ok(undefined);
+    try {
+      await track.applyConstraints({ advanced: [{ exposureMode: "continuous" }] } as unknown as MediaTrackConstraints);
+      return ok(undefined);
+    } catch (error) {
+      return fail(`The camera refused automatic exposure (${error instanceof Error ? error.message : String(error)}).`);
+    }
+  }
+
+  /** Mean brightness 0..1 of the current frame, from a tiny downscaled copy; null if unavailable. */
+  brightness(video: HTMLVideoElement): number | null {
+    if (!this.stream || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return null;
+    this.probe ??= new OffscreenCanvas(16, 9);
+    const ctx = this.probe.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.drawImage(video, 0, 0, 16, 9);
+    const px = ctx.getImageData(0, 0, 16, 9).data;
+    let sum = 0;
+    for (let i = 0; i + 2 < px.length; i += 4) sum += 0.2126 * (px[i] ?? 0) + 0.7152 * (px[i + 1] ?? 0) + 0.0722 * (px[i + 2] ?? 0);
+    return sum / (px.length / 4) / 255;
+  }
+
+  /** Current exposure as reported by the camera (Image Capture settings), if any. */
+  exposure(): { mode: string | null; timeMs: number | null } {
+    const s = this.stream?.getVideoTracks()[0]?.getSettings() as Record<string, unknown> | undefined;
+    const mode = typeof s?.["exposureMode"] === "string" ? (s["exposureMode"] as string) : null;
+    const time = typeof s?.["exposureTime"] === "number" ? (s["exposureTime"] as number) / 10 : null; // 100 µs units -> ms
+    return { mode, timeMs: time };
   }
 
   /** Idempotent: stops every track and detaches the stream. */

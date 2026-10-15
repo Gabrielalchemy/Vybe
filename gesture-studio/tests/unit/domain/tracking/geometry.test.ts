@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { palmCenter, pinchRatio, toDisplay } from "../../../../src/domain/tracking/geometry";
+import { fingerExtension, palmCenter, pinchRatio, toDisplay } from "../../../../src/domain/tracking/geometry";
 import { syntheticHand } from "../../../fixtures/hands";
 
 const square = { width: 640, height: 640 };
@@ -56,3 +56,30 @@ describe("toDisplay", () => {
     expect(toDisplay({ x: 0.2, y: 0.3 }, false)).toEqual({ x: 0.2, y: 0.3 });
   });
 });
+
+describe("fingerExtension", () => {
+  it("falls as the fingers fold, independent of hand position and scale", () => {
+    const open = fingerExtension(syntheticHand({ cx: 0.5, cy: 0.5, flex: 0 }), square);
+    const folded = fingerExtension(syntheticHand({ cx: 0.5, cy: 0.5, flex: 1 }), square);
+    const movedBig = fingerExtension(syntheticHand({ cx: 0.2, cy: 0.7, flex: 0, scale: 0.15 }), square);
+    expect(open.ok && folded.ok && movedBig.ok).toBe(true);
+    if (open.ok && folded.ok && movedBig.ok) {
+      expect(open.value - folded.value).toBeGreaterThan(0.6);
+      expect(movedBig.value).toBeCloseTo(open.value, 6);
+    }
+  });
+
+  it("corrects for camera aspect ratio", () => {
+    const hand = syntheticHand({ cx: 0.5, cy: 0.5, flex: 0.4 });
+    const squashed = hand.map((p) => ({ ...p, y: 0.5 + (p.y - 0.5) * (640 / 360) }));
+    const a = fingerExtension(hand, square);
+    const b = fingerExtension(squashed, wide);
+    expect(a.ok && b.ok && Math.abs(a.value - b.value)).toBeLessThan(1e-9);
+  });
+
+  it("rejects degenerate hands", () => {
+    expect(fingerExtension(syntheticHand({ cx: 0.5, cy: 0.5, scale: 0.0005 }), square).ok).toBe(false);
+    expect(fingerExtension([], square).ok).toBe(false);
+  });
+});
+

@@ -81,12 +81,21 @@ export class BrowserTrackingSource implements TrackingSource {
     this.client.stop();
   }
 
+  setSteadyFrameRate(on: boolean): Promise<Result<void, string>> {
+    return on ? this.camera.setSteadyFrameRate() : this.camera.setAutomaticExposure();
+  }
+
   /** Hung-worker watchdog; HandControl calls this on its timer. */
   check(nowMs: number): void {
     this.client.check(nowMs);
   }
 
-  stats(nowMs: number): TrackerStats & { deliveryRate: number } {
-    return { ...this.client.stats(nowMs), deliveryRate: this.delivery.perSecond(nowMs) };
+  stats(nowMs: number): TrackerStats & { deliveryRate: number; exposure: { mode: string | null; timeMs: number | null }; brightness: number | null } {
+    return {
+      ...this.client.stats(nowMs),
+      deliveryRate: this.delivery.perSecond(nowMs),
+      exposure: this.camera.exposure(),
+      brightness: this.camera.brightness(this.video),
+    };
   }
 }

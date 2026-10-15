@@ -17,6 +17,7 @@ Read [PRD.md](PRD.md) for required behavior, [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md
 | A07 | Fixed chord pitch snapshots; Tonal assists construction and suggestions | Reinterpreting symbols at playback can change saved music after a library update. Some projects store pitches that a symbol alone would not describe. |
 | A08 | Locally packaged model/WASM/samples/fonts with checksums and notices | Runtime CDNs simplify setup but defeat offline operation and reproducibility. Installation is larger and assets need a manifest. |
 | A09 | Tests plus separate actual-camera/owner gates | Simulated hands make repeatable tests but cannot establish camera accuracy, physical latency, or comfort. |
+| A10 | Play gesture: finger flick by default, pinch selectable (2026-10-15). The owner found pinch slow and unreliable; a flick is detected during the motion and measured relative to the wrist, so moving the hand between pads cannot trigger. | Pinch-only is simpler and needs one calibration flow. Flick needs its own calibration (open hand, prompted flicks, ordinary movement) and is untested on real hands; trials decide whether it stays the default. |
 
 No auth service, application API server, cloud storage, microservices, external LLM, or model training pipeline is needed. Hand landmark inference is the only learned model in the runtime.
 
@@ -164,7 +165,16 @@ Palm center is the mean of wrist and MCP landmarks 5, 9, 13, 17. Pinch ratio is 
 
 For each hand gather an open baseline, at least five open/close cycles, and comfortable reach bounds. Let `closedHigh` be the 90th percentile closed ratio and `openLow` the 10th percentile open ratio. Reject if the gap is nonpositive or smaller than three times the larger within-class median absolute deviation. Initial thresholds are `closedHigh + .25 * gap` for press and `closedHigh + .65 * gap` for release. These are calibration-derived starting rules to validate, not proven performance constants.
 
-Use an exponential cursor filter with a starting time constant of 35 ms and timestamp-based alpha. Do not apply that cursor filter to pinch onset. Require a threshold crossing to persist across two valid frames spanning at least 20 ms. Require neutral-open evidence after startup, rest, identity ambiguity, and loss. Compute expressive pinch velocity from a short timestamped ratio history, calibrated separately; fixed velocity remains the default.
+Use an exponential cursor filter with a starting time constant of 35 ms and timestamp-based alpha. Do not apply that cursor filter to the trigger signal. Require a threshold crossing to persist across two valid frames spanning at least 20 ms.
+
+**Finger flick (default trigger, A10).**
+- **Signal:** finger extension is the mean projection of fingertips 8, 12 and 16 onto the wrist-to-middle-MCP axis, divided by the index-MCP to pinky-MCP span, measured in pixel space.
+- **Press:** fires when the fall over the last two frame pairs is sustained. The first pair's rate must be at least half of `rateMin` and the second's at least `rateMin`, the three samples must span at least 20 ms, and the fall from the 150 ms maximum must be at least `dropMin`.
+- **Latch:** the press takes the target hovered on the stroke's first moving frame.
+- **Release:** extension stays at or above `releaseLevel` for two frames. Neutral-open evidence is extension at or above `openLevel`.
+- **Calibration:** per hand, 2 s open, 8 prompted flicks, then 6 s of ordinary movement in 500 ms windows. `dropMin` and `rateMin` sit 40% of the way from the movement's 90th percentile to the flicks' 10th percentile, and calibration is rejected unless the drop gap is positive and at least 3× the larger median absolute deviation.
+- **Sensitivity:** Less, Normal or More scales `dropMin` and `rateMin` by 1.2, 1 or 0.8.
+- **Profile:** profile version 2 records `trigger`. A gesture different from the chosen one makes the profile incompatible ("trigger"). Require neutral-open evidence after startup, rest, identity ambiguity, and loss. Compute expressive pinch velocity from a short timestamped ratio history, calibrated separately; fixed velocity remains the default.
 
 Assign identities by minimum wrist/palm displacement with a handedness mismatch penalty. An ambiguous assignment disarms the affected lanes; crossing hands must never swap a melody into the chord lane. Do not extrapolate missing fingers to generate attacks.
 

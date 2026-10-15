@@ -2,18 +2,20 @@ import { useEffect, useRef } from "react";
 import type { HandControl, HandControlSnapshot } from "../../app/handControl";
 import { CameraPreview } from "./CameraPreview";
 
-const STEPS = [
-  { kind: "identify", label: "Identify hands" },
-  { kind: "reach", label: "Comfortable reach" },
-  { kind: "pinch", label: "Pinch examples" },
-  { kind: "pace", label: "Comfortable pace" },
-] as const;
+const stepsFor = (trigger: "flick" | "pinch") =>
+  [
+    { kind: "identify", label: "Identify hands" },
+    { kind: "reach", label: "Comfortable reach" },
+    trigger === "flick" ? { kind: "flick", label: "Flick examples" } : { kind: "pinch", label: "Pinch examples" },
+    { kind: "pace", label: "Comfortable pace" },
+  ] as const;
 
 /** Calibration workspace: large mirrored feed, one instruction at a time, real progress. */
 export function CalibrationView({ handControl, snapshot, video }: { handControl: HandControl; snapshot: HandControlSnapshot; video: HTMLVideoElement }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const wizard = snapshot.wizard;
   const step = wizard?.step;
+  const STEPS = stepsFor(snapshot.trigger);
   const currentIndex = step ? STEPS.findIndex((s) => s.kind === step.kind) : -1;
 
   useEffect(() => heading.current?.focus(), []);
@@ -53,7 +55,7 @@ export function CalibrationView({ handControl, snapshot, video }: { handControl:
           </div>
         )}
 
-        <p className="muted">Only the measurements are saved: reach areas, pinch thresholds and a tempo suggestion. No images or hand recordings are stored.</p>
+        <p className="muted">Only the measurements are saved: reach areas, {snapshot.trigger === "flick" ? "flick" : "pinch"} thresholds and a tempo suggestion. No images or hand recordings are stored.</p>
 
         <div className="camera-panel__actions">
           {step?.kind === "failed" && (

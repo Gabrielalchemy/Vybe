@@ -91,3 +91,29 @@ test("repeated camera on/off cycles leave no live tracks or extra workers", asyn
   }
   expect(await liveTracks(page)).toBe(0);
 });
+
+test("steady 30 fps sets manual exposure within the camera's range, and can be turned off", async ({ page }) => {
+  await open(page);
+  await page.getByRole("button", { name: "Camera on" }).click();
+  await expect(status(page)).toContainText("calibration needed", { timeout: 30_000 });
+  await page.getByRole("button", { name: "Settings" }).click();
+  const toggle = page.getByRole("checkbox", { name: "Steady 30 frames per second" });
+  await expect(toggle).not.toBeChecked();
+  const exposure = () =>
+    page.evaluate(() => {
+      const v = document.querySelector<HTMLVideoElement>("video.camera-preview__video");
+      const track = (v?.srcObject as MediaStream | null)?.getVideoTracks()[0];
+      const s = track?.getSettings() as Record<string, unknown> | undefined;
+      return { mode: s?.["exposureMode"], time: s?.["exposureTime"] };
+    });
+  await toggle.click();
+  await expect(toggle).toBeChecked();
+  // Chromium's synthetic camera allows 10..100 (100 µs units): one 30 fps frame (333) is clamped to 100.
+  await expect.poll(exposure).toEqual({ mode: "manual", time: 100 });
+  // Off requests automatic exposure explicitly. Chromium's synthetic camera always
+  // reports "manual", so the switch back is verified on the real camera through the
+  // exposure readout in Settings, not here.
+  await toggle.click();
+  await expect(toggle).not.toBeChecked();
+  await expect(page.getByRole("dialog").getByText("Exposure", { exact: true })).toBeVisible();
+});

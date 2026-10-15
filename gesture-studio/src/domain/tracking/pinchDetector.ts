@@ -1,3 +1,5 @@
+import type { TriggerDetector, TriggerState, TriggerTransition } from "./triggerDetector";
+
 export interface PinchThresholds {
   /** Ratio at or below which the pinch counts as closed. */
   press: number;
@@ -5,8 +7,8 @@ export interface PinchThresholds {
   release: number;
 }
 
-export type PinchState = "unknown" | "open" | "closed";
-export type PinchTransition = "opened" | "closed" | null;
+export type PinchState = TriggerState;
+export type PinchTransition = TriggerTransition;
 
 /** A crossing must persist across this many valid frames spanning at least MIN_CONFIRM_MS. */
 export const CONFIRM_FRAMES = 2;
@@ -16,7 +18,7 @@ export const MIN_CONFIRM_MS = 20;
  * Hysteresis pinch detector on the raw (unsmoothed) pinch ratio. Reports
  * confirmed transitions only; the hand state machine decides what they mean.
  */
-export class PinchDetector {
+export class PinchDetector implements TriggerDetector {
   private current: PinchState = "unknown";
   private candidate: { target: "open" | "closed"; firstMs: number; frames: number } | null = null;
   private readonly t: PinchThresholds;
@@ -48,6 +50,11 @@ export class PinchDetector {
       this.candidate = null;
       return zone === "closed" ? "closed" : "opened";
     }
+    return null;
+  }
+
+  /** A pinch latches the target hovered on the press frame itself. */
+  onsetMs(): number | null {
     return null;
   }
 

@@ -146,7 +146,7 @@ This is a structural wireframe. It does not prescribe box-drawing characters in 
 
 Allocate approximately 40% of the playing width to chords and 60% to melody, with a 24 px gap. The chord grid has two rows and four columns. Melody has seven natural notes on the lower row; five accidentals sit above their corresponding boundaries. Preserve empty upper-row gaps between E/F and B/C.
 
-The rest strip lies below each grid and is visually separated from the playable targets. Hand cursors are small labeled rings: `L` in amber and `R` in sage, with a visible pinch-state change. Keep them from obscuring note labels. Never add a trailing particle effect.
+The rest strip lies below each grid and is visually separated from the playable targets. Hand cursors are small labeled rings: `L` in amber and `R` in sage, with a visible triggered-state change (flick or pinch). Keep them from obscuring note labels. Never add a trailing particle effect.
 
 The camera inset is approximately 240 × 135 px, collapsible without stopping tracking, and labeled Camera on. The calibration screen expands the feed and overlays the same coordinate transform used by the playing engine. Do not draw the feed using a crop that differs from the hit-test transform.
 

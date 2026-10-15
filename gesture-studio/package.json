@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "test": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:prod": "node scripts/e2e-prod.mjs",
     "assets:prepare": "node scripts/prepare-assets.mjs",
     "verify:assets": "node scripts/verify-assets.mjs",
     "build": "npm run verify:assets && tsc -b --noEmit && vite build",

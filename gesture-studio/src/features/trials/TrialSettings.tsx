@@ -84,6 +84,10 @@ export function TrialSettings({ trials, onStarted }: { trials: TrialController; 
         <dd className="data">{t.duplicates} (gate: 0)</dd>
         <dt>Other-hand presses</dt>
         <dd className="data">{t.otherHandPresses}</dd>
+        <dt>Too early (under 150 ms)</dt>
+        <dd className="data">{t.anticipatory}</dd>
+        <dt>Between attempts (not scored)</dt>
+        <dd className="data">{t.betweenAttemptPresses}</dd>
         <dt>Neutral tests</dt>
         <dd className="data">
           {t.neutralSessions} · {t.accidentalNotes} accidental notes in total (gate: at most 1 per 5-minute test)

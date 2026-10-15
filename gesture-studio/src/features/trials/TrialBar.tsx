@@ -23,7 +23,24 @@ export function TrialBar({ trials, snapshot, session }: { trials: TrialControlle
   if (!running) return null;
   return (
     <section className="trial-bar" aria-label="Instrument trial">
-      {running.kind === "accuracy" && running.prompt ? (
+      {running.kind === "accuracy" && running.feedback ? (
+        <p className={`trial-bar__prompt trial-bar__feedback--${running.feedback.result}`} role="status">
+          {running.feedback.result === "correct" ? (
+            <>
+              <span aria-hidden="true">✓ </span>Correct: {describeTarget(running.feedback.intendedTargetId, session)}
+            </>
+          ) : running.feedback.result === "wrong" ? (
+            <>
+              <span aria-hidden="true">✕ </span>You played {running.feedback.observedTargetId ? describeTarget(running.feedback.observedTargetId, session) : "a gap between pads"}; the
+              target was {describeTarget(running.feedback.intendedTargetId, session)}.
+            </>
+          ) : (
+            <>
+              <span aria-hidden="true">○ </span>Missed: {describeTarget(running.feedback.intendedTargetId, session)}
+            </>
+          )}
+        </p>
+      ) : running.kind === "accuracy" && running.prompt ? (
         <>
           <p className="trial-bar__prompt" aria-live="polite">
             Pinch with your <strong>{running.prompt.hand}</strong> hand: <strong>{describeTarget(running.prompt.targetId, session)}</strong>

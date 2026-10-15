@@ -8,6 +8,7 @@ const REASON_TEXT: Record<string, string> = {
   mirroring: "the mirroring setting changed",
   processing: "the tracking resolution changed",
   model: "the hand-tracking model changed",
+  trigger: "you chose a different play gesture",
 };
 
 /** Camera inset and hand-control actions for the Play workspace (DESIGN_SYSTEM.md §3). */
@@ -48,7 +49,7 @@ export function CameraPanel({ handControl, snapshot, video }: { handControl: Han
               ? `Recalibrate: ${snapshot.calibration.reasons.map((r) => REASON_TEXT[r] ?? r).join(", ")}.`
               : snapshot.calibration.status === "unreadable"
                 ? `The saved calibration could not be used. Calibrate again.`
-                : "Calibrate once so Vybe learns your reach and pinch. It takes about a minute."}
+                : `Calibrate once so Vybe learns your reach and your ${snapshot.trigger === "flick" ? "finger flick" : "pinch"}. It takes about a minute.`}
           </p>
           <button type="button" className="button button--primary" onClick={() => handControl.beginCalibration()}>
             Calibrate hands
@@ -80,7 +81,10 @@ export function CameraPanel({ handControl, snapshot, video }: { handControl: Han
 
       {phase === "active" && (
         <div className="camera-panel__actions">
-          <p role="status">Hand control is on. Pinch to play; move to the bottom strip to rest.</p>
+          <p role="status">
+            Hand control is on. {snapshot.trigger === "flick" ? "Flick your fingers down to play, lift them to stop" : "Pinch to play, open to stop"}; move to
+            the bottom strip to rest.
+          </p>
           <button type="button" className="button" onClick={() => handControl.pausePlaying()}>
             Pause hand control
           </button>

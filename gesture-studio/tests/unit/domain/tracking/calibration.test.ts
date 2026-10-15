@@ -86,6 +86,7 @@ describe("recommendTempo", () => {
 
 const profile = (): CalibrationProfile => ({
   profileVersion: PROFILE_VERSION,
+  trigger: "pinch",
   createdAt: "2026-10-12T12:00:00.000Z",
   camera: { deviceId: "cam-1", label: "HP HD Camera", width: 1280, height: 720, mirrored: true },
   processing: { longEdgePx: 640, modelSha256: "a".repeat(64) },
@@ -112,7 +113,7 @@ describe("validateCalibrationProfile", () => {
 
   it("rejects thresholds without hysteresis and unknown versions", () => {
     const a = profile();
-    a.hands.right.pinch.release = 0.3;
+    a.hands.right.pinch!.release = 0.3;
     expect(validateCalibrationProfile(a).ok).toBe(false);
     const b = { ...profile(), profileVersion: 99 };
     expect(validateCalibrationProfile(b).ok).toBe(false);
@@ -120,7 +121,7 @@ describe("validateCalibrationProfile", () => {
 });
 
 describe("checkCompatibility", () => {
-  const current = { deviceId: "cam-1", width: 1280, height: 720, mirrored: true, longEdgePx: 640, modelSha256: "a".repeat(64) };
+  const current = { deviceId: "cam-1", width: 1280, height: 720, mirrored: true, longEdgePx: 640, modelSha256: "a".repeat(64), trigger: "pinch" as const };
 
   it("accepts the same camera and processing geometry", () => {
     expect(checkCompatibility(profile(), current)).toEqual([]);
@@ -138,3 +139,40 @@ describe("checkCompatibility", () => {
     expect(checkCompatibility(profile(), { ...current, width: 1920, height: 1080 })).toEqual([]);
   });
 });
+
+describe("profile version 2 and the play gesture", () => {
+  const flick = { openLevel: 1.8, releaseLevel: 1.6, dropMin: 0.35, rateMin: 5, flexLevel: 1.25, openLow: 1.95 };
+  const flickProfile = (): CalibrationProfile => ({
+    ...profile(),
+    trigger: "flick",
+    hands: {
+      left: { region: profile().hands.left.region, flick: { ...flick } },
+      right: { region: profile().hands.right.region, flick: { ...flick } },
+    },
+  });
+
+  it("accepts a flick profile with flick thresholds", () => {
+    expect(validateCalibrationProfile(JSON.parse(JSON.stringify(flickProfile()))).ok).toBe(true);
+  });
+
+  it("rejects a flick profile without flick thresholds, or with disordered levels", () => {
+    const missing = { ...flickProfile(), hands: profile().hands };
+    expect(validateCalibrationProfile(missing).ok).toBe(false);
+    const disordered = flickProfile();
+    disordered.hands.left.flick!.releaseLevel = 1.9;
+    expect(validateCalibrationProfile(disordered).ok).toBe(false);
+  });
+
+  it("rejects a version 1 profile so the owner recalibrates", () => {
+    const { trigger: _t, ...v1 } = { ...profile(), profileVersion: 1 };
+    void _t;
+    expect(validateCalibrationProfile(v1).ok).toBe(false);
+  });
+
+  it("needs recalibration when the chosen play gesture differs from the profile's", () => {
+    const current = { deviceId: "cam-1", width: 1280, height: 720, mirrored: true, longEdgePx: 640, modelSha256: "a".repeat(64), trigger: "flick" as const };
+    expect(checkCompatibility(profile(), current)).toEqual(["trigger"]);
+    expect(checkCompatibility(flickProfile(), current)).toEqual([]);
+  });
+});
+

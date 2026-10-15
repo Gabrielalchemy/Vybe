@@ -5,7 +5,8 @@ import type { StorageError } from "../domain/storageError";
 import { checkCompatibility, type CalibrationProfile, type IncompatibilityReason } from "../domain/tracking/calibration";
 import { CalibrationSession, type CalibrationFrame, type CalibrationStep } from "../domain/tracking/calibrationSession";
 import { palmCenter, toDisplay, type Point2 } from "../domain/tracking/geometry";
-import { GestureInterpreter, type HandView, type TrackingEvent } from "../domain/tracking/gestureInterpreter";
+import { GestureInterpreter, type FlickSensitivity, type HandView, type TrackingEvent } from "../domain/tracking/gestureInterpreter";
+import type { TriggerGesture } from "../domain/tracking/triggerDetector";
 import type { Detection } from "../domain/tracking/identity";
 import type { Delegate } from "../domain/tracking/protocol";
 import type { ProjectRepository } from "../persistence/indexedDbRepository";
@@ -40,7 +41,11 @@ export interface TrackingSource {
   stop(): void;
   /** Detects a hung worker; called on the watchdog timer. */
   check?(nowMs: number): void;
-  stats?(nowMs: number): (TrackerStats & { deliveryRate: number }) | null;
+  /** On: manual exposure capped below one frame. Off: automatic exposure, applied explicitly. */
+  setSteadyFrameRate?(on: boolean): Promise<Result<void, string>>;
+  stats?(nowMs: number):
+    | (TrackerStats & { deliveryRate: number; exposure?: { mode: string | null; timeMs: number | null }; brightness?: number | null })
+    | null;
 }
 
 export interface DelegateMeasurement {
@@ -94,6 +99,10 @@ export interface HandControlSnapshot {
   saveError: StorageError | null;
   /** A short explanation when an action could not proceed. */
   notice: string | null;
+  steadyFrameRate: { enabled: boolean; message: string | null };
+  /** The play gesture: finger flick (default) or pinch. */
+  trigger: TriggerGesture;
+  sensitivity: FlickSensitivity;
 }
 
 export interface HandControlDeps {
@@ -109,6 +118,10 @@ export interface HandControlDeps {
 }
 
 const WATCHDOG_MS = 50;
+/** Mean picture brightness (0..1) below which Steady 30 is judged too dark to track. */
+export const DARK_BRIGHTNESS = 0.12;
+/** Consecutive one-second dark checks before Steady 30 is switched off. */
+export const DARK_CHECKS = 3;
 /** Wizard progress reaches React at most this often; step changes publish immediately. */
 const WIZARD_PUBLISH_MS = 100;
 
@@ -119,6 +132,9 @@ export interface PalmPreview {
 const ROLES = ["left", "right"] as const;
 export const DELEGATE_PREF = "trackingDelegate";
 export const CAMERA_PREF = "cameraDeviceId";
+export const STEADY_FPS_PREF = "cameraSteadyFrameRate";
+export const TRIGGER_PREF = "triggerGesture";
+export const SENSITIVITY_PREF = "flickSensitivity";
 
 /**
  * Orchestrates hand control: camera/tracker lifecycle, calibration, the
@@ -138,6 +154,11 @@ export class HandControl {
   private readiness: Record<HandRole, boolean> = { left: false, right: false };
   private saveError: StorageError | null = null;
   private notice: string | null = null;
+  private steady: { enabled: boolean; message: string | null } = { enabled: false, message: null };
+  private darkChecks = 0;
+  private trigger: TriggerGesture = "flick";
+  private sensitivity: FlickSensitivity = "normal";
+  private lastDarkCheckMs = 0;
   /** Camera frame capture to press dispatched to audio (main thread), ms. */
   private readonly pressLatency = new RollingWindow(200);
   private lanePx: Record<HandRole, SizePx> = { left: { width: 400, height: 320 }, right: { width: 600, height: 320 } };
@@ -157,6 +178,8 @@ export class HandControl {
       if (this.lastRevision !== null && snap.configurationRevision !== this.lastRevision) this.resetHands();
       this.lastRevision = snap.configurationRevision;
     });
+    // Show the saved gesture choices in Settings before the camera is ever started.
+    void this.loadGesturePrefs().then(() => this.publish());
   }
 
   snapshot(): HandControlSnapshot {
@@ -175,13 +198,18 @@ export class HandControl {
     return () => this.handListeners.delete(listener);
   }
 
+  /** A hand's current lane-local cursor while hand control runs (diagnostics). */
+  cursorOf(hand: HandRole): Point2 | null {
+    return this.interpreter?.view()[hand].cursor ?? null;
+  }
+
   /** Per-frame palm positions for the camera preview overlay. */
   onPreview(listener: (p: PalmPreview) => void): () => void {
     this.previewListeners.add(listener);
     return () => this.previewListeners.delete(listener);
   }
 
-  stats(): (TrackerStats & { deliveryRate: number; frameToDispatchMs: Summary | null }) | null {
+  stats(): (TrackerStats & { deliveryRate: number; frameToDispatchMs: Summary | null; exposure?: { mode: string | null; timeMs: number | null } }) | null {
     const base = this.deps.source.stats?.(this.deps.nowMs());
     return base ? { ...base, frameToDispatchMs: this.pressLatency.summary() } : null;
   }
@@ -192,6 +220,7 @@ export class HandControl {
     this.error = null;
     this.publish();
     const repo = await this.deps.repo;
+    await this.loadGesturePrefs();
     const savedDelegate = repo.ok ? await repo.value.getPreference(DELEGATE_PREF) : null;
     const delegate: Delegate = savedDelegate?.ok && savedDelegate.value === "GPU" ? "GPU" : "CPU";
     let cameraId = deviceId;
@@ -212,6 +241,10 @@ export class HandControl {
     }
     this.info = started.value;
     if (repo.ok) await repo.value.setPreference(CAMERA_PREF, started.value.camera.deviceId);
+    const steadyPref = repo.ok ? await repo.value.getPreference(STEADY_FPS_PREF) : null;
+    // Webcams keep exposure settings between uses, so automatic exposure is applied explicitly when Steady 30 is off.
+    await this.applySteady(steadyPref?.ok === true && steadyPref.value === true);
+    this.darkChecks = 0;
     this.cancelWatchdog = this.deps.every(WATCHDOG_MS, () => this.watchdog());
     await this.loadProfile();
     this.publish();
@@ -233,6 +266,7 @@ export class HandControl {
       processing: { longEdgePx: this.info.processing.longEdgePx, modelSha256: this.info.modelSha256 },
       nowIso: this.deps.nowIso,
       startMs: this.deps.nowMs(),
+      trigger: this.trigger,
     };
     this.wizard = this.deps.createCalibration ? this.deps.createCalibration(setup) : new CalibrationSession(setup);
     this.phase = "calibrating";
@@ -337,6 +371,83 @@ export class HandControl {
     return measurements;
   }
 
+  /** Owner choice of play gesture. A saved calibration for the other gesture asks for recalibration. */
+  async setTriggerGesture(trigger: TriggerGesture): Promise<void> {
+    this.trigger = trigger;
+    this.publish(); // Show the choice at once; storage follows.
+    const repo = await this.deps.repo;
+    if (repo.ok) await repo.value.setPreference(TRIGGER_PREF, trigger);
+    if (this.info && this.phase !== "off" && this.phase !== "starting" && this.phase !== "error") {
+      if (this.phase === "active") this.leasesOff();
+      this.releaseCameraLanes();
+      this.interpreter = null;
+      this.wizard = null;
+      this.profile = null;
+      await this.loadProfile();
+    }
+    this.publish();
+  }
+
+  /** Flick sensitivity; hands must open again after a change. */
+  async setSensitivity(sensitivity: FlickSensitivity): Promise<void> {
+    this.sensitivity = sensitivity;
+    this.publish(); // Show the choice at once; storage follows.
+    const repo = await this.deps.repo;
+    if (repo.ok) await repo.value.setPreference(SENSITIVITY_PREF, sensitivity);
+    if (this.interpreter && this.profile) {
+      this.releaseCameraLanes();
+      this.interpreter = new GestureInterpreter({ profile: this.profile, lanePx: this.lanePx, sensitivity });
+      this.readiness = { left: false, right: false };
+    }
+    this.publish();
+  }
+
+  private async loadGesturePrefs(): Promise<void> {
+    const repo = await this.deps.repo;
+    if (!repo.ok) return;
+    const trigger = await repo.value.getPreference(TRIGGER_PREF);
+    this.trigger = trigger.ok && trigger.value === "pinch" ? "pinch" : "flick";
+    const sens = await repo.value.getPreference(SENSITIVITY_PREF);
+    this.sensitivity = sens.ok && (sens.value === "less" || sens.value === "more") ? sens.value : "normal";
+  }
+
+  /** Owner choice: steady 30 fps (darker in dim light) versus automatic exposure. */
+  async setSteadyFrameRate(on: boolean, message: string | null = null): Promise<void> {
+    const applied = await this.applySteady(on);
+    if (message) this.steady = { ...this.steady, message };
+    const repo = await this.deps.repo;
+    if (applied && repo.ok) await repo.value.setPreference(STEADY_FPS_PREF, on);
+    this.darkChecks = 0;
+    this.publish();
+  }
+
+  private async applySteady(on: boolean): Promise<boolean> {
+    const apply = this.deps.source.setSteadyFrameRate;
+    if (!apply) {
+      this.steady = { enabled: false, message: on ? "This camera source cannot change exposure." : null };
+      return !on;
+    }
+    const result = await apply.call(this.deps.source, on);
+    this.steady = result.ok ? { enabled: on, message: null } : { enabled: false, message: on ? result.error : null };
+    return result.ok;
+  }
+
+  /** Steady 30 that leaves the picture too dark to track is switched off automatically. */
+  private checkDarkness(nowMs: number): void {
+    if (!this.steady.enabled || nowMs - this.lastDarkCheckMs < 1000) return;
+    this.lastDarkCheckMs = nowMs;
+    const brightness = this.deps.source.stats?.(nowMs)?.brightness;
+    if (typeof brightness !== "number") return;
+    this.darkChecks = brightness < DARK_BRIGHTNESS ? this.darkChecks + 1 : 0;
+    if (this.darkChecks >= DARK_CHECKS) {
+      this.darkChecks = 0;
+      void this.setSteadyFrameRate(
+        false,
+        "The picture was too dark to track at a steady 30 frames per second, so automatic exposure is back on. Light your face and hands from the front to use it.",
+      );
+    }
+  }
+
   setLaneSize(hand: HandRole, size: SizePx): void {
     const prev = this.lanePx[hand];
     if (prev.width === size.width && prev.height === size.height) return;
@@ -369,6 +480,7 @@ export class HandControl {
       return;
     }
     const reasons = checkCompatibility(loaded.value, {
+      trigger: this.trigger,
       deviceId: info.camera.deviceId,
       width: info.camera.width,
       height: info.camera.height,
@@ -388,7 +500,7 @@ export class HandControl {
 
   private enterReadiness(): void {
     if (!this.profile) return;
-    this.interpreter = new GestureInterpreter({ profile: this.profile, lanePx: this.lanePx });
+    this.interpreter = new GestureInterpreter({ profile: this.profile, lanePx: this.lanePx, sensitivity: this.sensitivity });
     this.readiness = { left: false, right: false };
     this.phase = "readiness";
   }
@@ -475,6 +587,7 @@ export class HandControl {
 
   private watchdog(): void {
     this.deps.source.check?.(this.deps.nowMs());
+    this.checkDarkness(this.deps.nowMs());
     if (!this.interpreter) return;
     // Audio-thread leases are authoritative: an expired lane is retired here
     // as soon as the main thread runs again, and the hand must reopen.
@@ -561,6 +674,9 @@ export class HandControl {
       readiness: { ...this.readiness },
       saveError: this.saveError,
       notice: this.notice,
+      steadyFrameRate: { ...this.steady },
+      trigger: this.trigger,
+      sensitivity: this.sensitivity,
     });
   }
 

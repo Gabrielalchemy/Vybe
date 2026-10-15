@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { SessionController } from "../../../src/app/sessionController";
 import { TrialController, TRIALS_PREF } from "../../../src/app/trialController";
 import { FACTORY_SCENES } from "../../../src/domain/presets";
-import { DUPLICATE_WINDOW_MS } from "../../../src/domain/trials/trialSession";
+import { DUPLICATE_WINDOW_MS, FEEDBACK_MS } from "../../../src/domain/trials/trialSession";
 import { openRepository, type ProjectRepository } from "../../../src/persistence/indexedDbRepository";
 
 let now = 0;
@@ -30,6 +30,7 @@ beforeEach(async () => {
     every: (_ms, fn) => { ticks.push(fn); return () => undefined; },
     environment: () => ({ handControlActive: handActive, browser: "Chrome/155", delegate: "GPU", calibratedAt: "2026-10-12T19:00:00.000Z", camera: "HP HD Camera 1280x720 @30", outputLatencyMs: 12 }),
     seed: () => 42,
+    cursorFor: (hand) => (hand === "left" ? { x: 0.3, y: 0.2 } : { x: 0.6, y: 0.6 }),
   });
 });
 
@@ -52,6 +53,7 @@ function pinchPrompt(correct: boolean) {
   now += 100;
   session.release(p.hand, "camera");
   tick(DUPLICATE_WINDOW_MS);
+  tick(FEEDBACK_MS);
 }
 
 describe("TrialController", () => {
@@ -75,6 +77,9 @@ describe("TrialController", () => {
     expect(snap.last?.summary).toMatchObject({ kind: "accuracy", attempts: 4, correct: 3, wrong: 1 });
     expect(snap.totals).toMatchObject({ sessions: 1, attempts: 4, correct: 3, wrong: 1, missed: 0, duplicates: 0 });
     const saved = await repo.getPreference(TRIALS_PREF);
+    expect(saved.ok && Array.isArray(saved.value) && saved.value[0].attempts[0].cursor).toEqual(
+      prompts[0]!.startsWith("chord") ? { x: 0.3, y: 0.2 } : { x: 0.6, y: 0.6 },
+    );
     expect(saved.ok && Array.isArray(saved.value) && saved.value[0]).toMatchObject({
       kind: "accuracy",
       conditions: "desk lamp, built-in speakers",
@@ -132,4 +137,19 @@ describe("TrialController", () => {
     await reloaded.load();
     expect(reloaded.snapshot().totals).toMatchObject({ sessions: 2, attempts: 4, correct: 3, wrong: 1 });
   });
+
+  it("shows the scored attempt as feedback before the next prompt", () => {
+    trials.startAccuracy({ attempts: 3, conditions: "" });
+    const p = trials.snapshot().running!.prompt!;
+    session.armCamera(p.hand);
+    now += 400;
+    session.press(p.hand, p.targetId, "camera");
+    now += 100;
+    session.release(p.hand, "camera");
+    tick(DUPLICATE_WINDOW_MS);
+    expect(trials.snapshot().running).toMatchObject({ prompt: null, feedback: { result: "correct", intendedTargetId: p.targetId } });
+    tick(FEEDBACK_MS);
+    expect(trials.snapshot().running).toMatchObject({ feedback: null, prompt: { index: 1 } });
+  });
 });
+

@@ -1,18 +1,23 @@
 import type { HandRole } from "../events";
 import {
   PROFILE_VERSION,
+  calibrateFlick,
   calibratePinch,
   calibrateReach,
   recommendTempo,
+  strokeFeatures,
   type CalibrationProfile,
+  type FlickCalibration,
   type HandCalibration,
   type PinchCalibration,
   type Rect,
 } from "./calibration";
+import { FlickDetector } from "./flickDetector";
 import { DEFAULT_CURSOR_TAU_MS } from "./cursorFilter";
-import { palmCenter, pinchRatio, toDisplay, type ImageSize, type Point2 } from "./geometry";
+import { fingerExtension, palmCenter, pinchRatio, toDisplay, type ImageSize, type Point2 } from "./geometry";
 import { IdentityTracker, type Detection } from "./identity";
 import { PinchDetector } from "./pinchDetector";
+import type { TriggerDetector, TriggerGesture } from "./triggerDetector";
 
 export const IDENTIFY_MIN_FRAMES = 15;
 export const IDENTIFY_MIN_MS = 1000;
@@ -22,6 +27,14 @@ export const PHASE_MS = 1500;
 /** Samples in the first part of each prompted phase are discarded (reaction time). */
 export const PHASE_SETTLE_MS = 500;
 export const PACE_PINCHES = 8;
+/** Flick calibration per hand: hold open, prompted flicks, then ordinary movement. */
+export const FLICK_OPEN_MS = 2000;
+export const FLICK_PROMPTS = 8;
+export const FLICK_PROMPT_MS = 1200;
+export const FLICK_MOVE_MS = 6000;
+const FLICK_TOTAL_MS = FLICK_OPEN_MS + FLICK_PROMPTS * FLICK_PROMPT_MS + FLICK_MOVE_MS;
+/** Ordinary movement is cut into windows of this length, each compared with a flick. */
+const MOVE_WINDOW_MS = 500;
 export const PACE_TIMEOUT_MS = 15_000;
 
 export type CalibrationFailureCode =
@@ -31,14 +44,17 @@ export type CalibrationFailureCode =
   | "too-few-samples"
   | "pinch-overlap"
   | "pinch-unreliable"
+  | "flick-overlap"
+  | "flick-unreliable"
   | "reach-too-small";
 
-type RetryTarget = { kind: "identify" } | { kind: "reach"; hand: HandRole } | { kind: "pinch"; hand: HandRole };
+type RetryTarget = { kind: "identify" } | { kind: "reach"; hand: HandRole } | { kind: "pinch"; hand: HandRole } | { kind: "flick"; hand: HandRole };
 
 export type CalibrationStep =
   | { kind: "identify"; hand: HandRole }
   | { kind: "reach"; hand: HandRole }
   | { kind: "pinch"; hand: HandRole; cycle: number; phase: "open" | "closed" }
+  | { kind: "flick"; hand: HandRole; phase: "open" | "flick" | "move"; count: number }
   | { kind: "pace" }
   | { kind: "done"; profile: CalibrationProfile }
   | { kind: "failed"; error: { code: CalibrationFailureCode; message: string }; retry: RetryTarget };
@@ -48,6 +64,8 @@ export interface CalibrationSetup {
   processing: CalibrationProfile["processing"];
   nowIso: () => string;
   startMs: number;
+  /** The play gesture being calibrated. */
+  trigger: TriggerGesture;
 }
 
 export interface CalibrationFrame {
@@ -77,7 +95,11 @@ export class CalibrationSession {
   private reachSamples: Point2[] = [];
   private openSamples: number[] = [];
   private closedSamples: number[] = [];
-  private paceDetector: PinchDetector | null = null;
+  private paceDetector: TriggerDetector | null = null;
+  private flickOpen: number[] = [];
+  private flickWindows: { e: number; tMs: number }[][] = [];
+  private moveSamples: { e: number; tMs: number }[] = [];
+  private readonly flicks: Partial<Record<HandRole, FlickCalibration>> = {};
   private paceCloses: number[] = [];
 
   private readonly regions: Partial<Record<HandRole, Rect>> = {};
@@ -106,6 +128,8 @@ export class CalibrationSession {
         return this.stepStartMs === null ? 0 : Math.min(elapsed / REACH_MS, 1);
       case "pinch":
         return this.stepStartMs === null ? 0 : Math.min(elapsed / (PINCH_CYCLES * 2 * PHASE_MS), 1);
+      case "flick":
+        return this.stepStartMs === null ? 0 : Math.min(elapsed / FLICK_TOTAL_MS, 1);
       case "pace":
         return Math.min(this.paceCloses.length / PACE_PINCHES, 1);
       case "done":
@@ -126,8 +150,16 @@ export class CalibrationSession {
         return c.phase === "open"
           ? `${capital(c.hand)} hand: open — keep thumb and index finger apart. (${c.cycle + 1} of ${PINCH_CYCLES})`
           : `${capital(c.hand)} hand: pinch — touch thumb to index fingertip and hold. (${c.cycle + 1} of ${PINCH_CYCLES})`;
+      case "flick":
+        return c.phase === "open"
+          ? `${capital(c.hand)} hand: hold your hand open and still, fingers up.`
+          : c.phase === "flick"
+            ? `${capital(c.hand)} hand: flick your fingers down quickly, then lift them. (${c.count + 1} of ${FLICK_PROMPTS})`
+            : `${capital(c.hand)} hand: move your open hand slowly between the pads, without flicking.`;
       case "pace":
-        return "Right hand: pinch and open at a steady, comfortable pace, as if tapping a beat. You can skip this.";
+        return this.setup.trigger === "flick"
+          ? "Right hand: flick and lift at a steady, comfortable pace, as if tapping a beat. You can skip this."
+          : "Right hand: pinch and open at a steady, comfortable pace, as if tapping a beat. You can skip this.";
       case "done":
         return "Calibration complete.";
       case "failed":
@@ -145,6 +177,8 @@ export class CalibrationSession {
         return this.feedReach(c.hand, frame);
       case "pinch":
         return this.feedPinch(c, frame);
+      case "flick":
+        return this.feedFlick(c.hand, frame);
       case "pace":
         return this.feedPace(frame);
       default:
@@ -157,7 +191,7 @@ export class CalibrationSession {
     if (c.kind !== "failed") return;
     if (c.retry.kind === "identify") this.enter({ kind: "identify", hand: "left" });
     else if (c.retry.kind === "reach") this.enter({ kind: "reach", hand: c.retry.hand });
-    else this.enter({ kind: "pinch", hand: c.retry.hand, cycle: 0, phase: "open" });
+    else this.enterGesture(c.retry.hand);
   }
 
   skipPace(): void {
@@ -175,6 +209,9 @@ export class CalibrationSession {
     this.closedSamples = [];
     this.paceCloses = [];
     this.paceDetector = null;
+    this.flickOpen = [];
+    this.flickWindows = [];
+    this.moveSamples = [];
     this.identity = new IdentityTracker(this.correction);
   }
 
@@ -235,7 +272,57 @@ export class CalibrationSession {
       this.failWith("regions-crossed", "Your hands would need to cross. Keep your left hand on the left side and your right hand on the right side.", { kind: "reach", hand: "left" });
       return;
     }
-    this.enter({ kind: "pinch", hand: "left", cycle: 0, phase: "open" });
+    this.enterGesture("left");
+  }
+
+  private enterGesture(hand: HandRole): void {
+    if (this.setup.trigger === "flick") this.enter({ kind: "flick", hand, phase: "open", count: 0 });
+    else this.enter({ kind: "pinch", hand, cycle: 0, phase: "open" });
+  }
+
+  private feedFlick(hand: HandRole, frame: CalibrationFrame): void {
+    const d = this.roleDetection(hand, frame);
+    if (this.stepStartMs === null) {
+      if (!d) return; // Wait for the hand before starting the prompts.
+      this.stepStartMs = frame.tMs;
+    }
+    const elapsed = frame.tMs - this.stepStartMs;
+    if (elapsed >= FLICK_TOTAL_MS) {
+      const flicks = this.flickWindows.filter((w) => w.length >= 3).map(strokeFeatures);
+      const moves: ReturnType<typeof strokeFeatures>[] = [];
+      for (let start = 0; start < FLICK_MOVE_MS; start += MOVE_WINDOW_MS) {
+        const from = this.stepStartMs + FLICK_OPEN_MS + FLICK_PROMPTS * FLICK_PROMPT_MS + start;
+        const window = this.moveSamples.filter((x) => x.tMs >= from && x.tMs < from + MOVE_WINDOW_MS);
+        if (window.length >= 3) moves.push(strokeFeatures(window));
+      }
+      const result = calibrateFlick(this.flickOpen, flicks, moves);
+      if (!result.ok) {
+        this.failWith(result.error.code, result.error.message, { kind: "flick", hand });
+        return;
+      }
+      this.flicks[hand] = result.value;
+      if (hand === "left") this.enter({ kind: "flick", hand: "right", phase: "open", count: 0 });
+      else this.enter({ kind: "pace" });
+      return;
+    }
+    let phase: "open" | "flick" | "move" = "open";
+    let count = 0;
+    if (elapsed >= FLICK_OPEN_MS + FLICK_PROMPTS * FLICK_PROMPT_MS) phase = "move";
+    else if (elapsed >= FLICK_OPEN_MS) {
+      phase = "flick";
+      count = Math.floor((elapsed - FLICK_OPEN_MS) / FLICK_PROMPT_MS);
+    }
+    this.current = { kind: "flick", hand, phase, count };
+    if (!d) return;
+    const e = fingerExtension(d.landmarks, frame.imageSize);
+    if (!e.ok) return;
+    if (phase === "open") {
+      if (elapsed >= PHASE_SETTLE_MS) this.flickOpen.push(e.value);
+    } else if (phase === "flick") {
+      (this.flickWindows[count] ??= []).push({ e: e.value, tMs: frame.tMs });
+    } else {
+      this.moveSamples.push({ e: e.value, tMs: frame.tMs });
+    }
   }
 
   private feedPinch(c: Extract<CalibrationStep, { kind: "pinch" }>, frame: CalibrationFrame): void {
@@ -253,7 +340,7 @@ export class CalibrationSession {
         return;
       }
       this.pinches[c.hand] = result.value;
-      if (c.hand === "left") this.enter({ kind: "pinch", hand: "right", cycle: 0, phase: "open" });
+      if (c.hand === "left") this.enterGesture("right");
       else this.enter({ kind: "pace" });
       return;
     }
@@ -266,16 +353,20 @@ export class CalibrationSession {
   }
 
   private feedPace(frame: CalibrationFrame): void {
-    const pinch = this.pinches.right;
-    if (!pinch) return;
-    this.paceDetector ??= new PinchDetector(pinch);
+    if (!this.paceDetector) {
+      const flick = this.flicks.right;
+      const pinch = this.pinches.right;
+      if (this.setup.trigger === "flick" && flick) this.paceDetector = new FlickDetector(flick);
+      else if (this.setup.trigger === "pinch" && pinch) this.paceDetector = new PinchDetector(pinch);
+      else return;
+    }
     const d = this.roleDetection("right", frame);
     if (this.stepStartMs === null) {
       if (!d) return;
       this.stepStartMs = frame.tMs;
     }
     if (d) {
-      const ratio = pinchRatio(d.landmarks, frame.imageSize);
+      const ratio = this.setup.trigger === "flick" ? fingerExtension(d.landmarks, frame.imageSize) : pinchRatio(d.landmarks, frame.imageSize);
       if (ratio.ok && this.paceDetector.update(ratio.value, frame.tMs) === "closed") this.paceCloses.push(frame.tMs);
     } else {
       this.paceDetector.invalidFrame();
@@ -288,13 +379,22 @@ export class CalibrationSession {
 
   private finish(tempo: number | null): void {
     const { left: rl, right: rr } = this.regions;
-    const { left: pl, right: pr } = this.pinches;
-    if (!rl || !rr || !pl || !pr) return;
-    const hands: Record<HandRole, HandCalibration> = { left: { region: rl, pinch: pl }, right: { region: rr, pinch: pr } };
+    if (!rl || !rr) return;
+    let hands: Record<HandRole, HandCalibration>;
+    if (this.setup.trigger === "flick") {
+      const { left: fl, right: fr } = this.flicks;
+      if (!fl || !fr) return;
+      hands = { left: { region: rl, flick: fl }, right: { region: rr, flick: fr } };
+    } else {
+      const { left: pl, right: pr } = this.pinches;
+      if (!pl || !pr) return;
+      hands = { left: { region: rl, pinch: pl }, right: { region: rr, pinch: pr } };
+    }
     this.current = {
       kind: "done",
       profile: {
         profileVersion: PROFILE_VERSION,
+        trigger: this.setup.trigger,
         createdAt: this.setup.nowIso(),
         camera: { ...this.setup.camera },
         processing: { ...this.setup.processing },

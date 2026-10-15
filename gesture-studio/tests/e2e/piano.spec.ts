@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("every piano key A0-C8 sounds near its pitch, and loud is louder than soft", async ({ page }) => {
+test("every piano key A0-C8 sounds near its pitch, and loud is louder than soft", { tag: "@dev" }, async ({ page }) => {
   test.setTimeout(120_000);
   await page.goto("/");
   const r = await page.evaluate(async () => {

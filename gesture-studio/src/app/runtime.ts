@@ -118,9 +118,18 @@ export function createAppRuntime(): AppRuntime {
         calibratedAt: profile?.createdAt ?? null,
         camera: cam ? `${cam.label} ${cam.width}x${cam.height}${cam.frameRate ? ` @${Math.round(cam.frameRate)}` : ""}` : null,
         outputLatencyMs: audio.snapshot().outputLatencyMs,
+        trigger: hand.trigger,
+        thresholds: profile
+          ? {
+              left: { ...(profile.hands.left.flick ?? profile.hands.left.pinch) },
+              right: { ...(profile.hands.right.flick ?? profile.hands.right.pinch) },
+            }
+          : null,
+        steadyFrameRate: hand.steadyFrameRate.enabled,
       };
     },
     seed: () => crypto.getRandomValues(new Uint32Array(1))[0] ?? 1,
+    cursorFor: (hand) => handControl.cursorOf(hand),
   });
   void trials.load();
   const stopEverything = () => {

@@ -87,6 +87,74 @@ export function CameraSettings({ handControl, open }: { handControl: HandControl
         )}
       </div>
 
+      <fieldset className="choice">
+        <legend>Play gesture</legend>
+        {(
+          [
+            ["flick", "Finger flick", "Flick your fingers down to play; lift them to stop. Quicker, and moving your hand between pads can't play a note."],
+            ["pinch", "Pinch", "Touch thumb to index finger to play; open to stop."],
+          ] as const
+        ).map(([value, label, help]) => (
+          <label key={value} className="choice__option">
+            <input
+              type="radio"
+              name="play-gesture"
+              value={value}
+              checked={snap.trigger === value}
+              onChange={() => void handControl.setTriggerGesture(value)}
+            />
+            <span>
+              <strong>{label}</strong>
+              <span className="muted"> {help}</span>
+            </span>
+          </label>
+        ))}
+        <p className="muted">Changing the gesture needs a new calibration.</p>
+      </fieldset>
+
+      {snap.trigger === "flick" && (
+        <fieldset className="choice choice--row">
+          <legend>Flick sensitivity</legend>
+          {(
+            [
+              ["less", "Less"],
+              ["normal", "Normal"],
+              ["more", "More"],
+            ] as const
+          ).map(([value, label]) => (
+            <label key={value} className="choice__option">
+              <input
+                type="radio"
+                name="flick-sensitivity"
+                value={value}
+                checked={snap.sensitivity === value}
+                onChange={() => void handControl.setSensitivity(value)}
+              />
+              <span>{label}</span>
+            </label>
+          ))}
+          <p className="muted">More plays smaller, slower flicks; Less ignores them. Hands open again after a change.</p>
+        </fieldset>
+      )}
+
+      {cameraOn && (
+        <div className="steady-fps">
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={snap.steadyFrameRate.enabled}
+              onChange={(e) => void handControl.setSteadyFrameRate(e.target.checked)}
+            />
+            <span>Steady 30 frames per second</span>
+          </label>
+          <p className="muted">
+            Stops the camera from slowing to 15 frames per second in dim light, so hand control responds sooner. The picture gets darker
+            instead; if tracking gets worse, add light or turn this off. Turning it off restarts the camera.
+          </p>
+          {snap.steadyFrameRate.message && <p role="status">{snap.steadyFrameRate.message}</p>}
+        </div>
+      )}
+
       {measurements && (
         <>
           <h4>Tracking speed on this computer</h4>
@@ -112,7 +180,7 @@ export function CameraSettings({ handControl, open }: { handControl: HandControl
               ))}
             </tbody>
           </table>
-          <p className="muted">Vybe now uses the faster working option. These are software timings on this computer, not the full pinch-to-sound time.</p>
+          <p className="muted">Vybe now uses the faster working option. These are software timings on this computer, not the full gesture-to-sound time.</p>
         </>
       )}
 
@@ -122,6 +190,11 @@ export function CameraSettings({ handControl, open }: { handControl: HandControl
           <dl className="facts">
             <dt>Camera frames</dt>
             <dd className="data">{stats.deliveryRate.toFixed(1)} per second</dd>
+            <dt>Exposure</dt>
+            <dd className="data">
+              {stats.exposure?.mode === "manual" ? "manual" : stats.exposure?.mode === "continuous" ? "automatic" : (stats.exposure?.mode ?? "not reported")}
+              {stats.exposure?.timeMs != null ? ` · ${stats.exposure.timeMs.toFixed(1)} ms` : ""}
+            </dd>
             <dt>Tracking results</dt>
             <dd className="data">{stats.inferenceRate.toFixed(1)} per second</dd>
             <dt>Inference time</dt>
@@ -139,7 +212,7 @@ export function CameraSettings({ handControl, open }: { handControl: HandControl
             <p className="notice notice--warning" role="status">
               <span aria-hidden="true">▲ </span>
               The camera is sending {stats.deliveryRate.toFixed(0)} frames per second instead of {Math.round(snap.camera?.frameRate ?? 30)}. This usually
-              means the room is dim. More light on your hands makes hand control respond sooner.
+              means the room is dim. More light on your hands, or Steady 30 frames per second above, makes hand control respond sooner.
             </p>
           )}
           <p className="muted">Component measurements in the browser. They do not measure camera exposure or sound output.</p>

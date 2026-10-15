@@ -123,7 +123,8 @@ describe("openRepository", () => {
 
 describe("calibration profiles", () => {
   const profile = {
-    profileVersion: 1,
+    profileVersion: 2,
+    trigger: "pinch" as const,
     createdAt: "2026-10-12T12:00:00.000Z",
     camera: { deviceId: "cam", label: "HP HD Camera", width: 1280, height: 720, mirrored: true },
     processing: { longEdgePx: 640, modelSha256: "a".repeat(64) },

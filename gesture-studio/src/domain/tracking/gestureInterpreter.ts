@@ -2,9 +2,15 @@ import type { HandRole } from "../events";
 import { CHORD_LAYOUT, MELODY_LAYOUT, hoverTarget, type LayoutDefinition, type SizePx } from "../layout";
 import type { CalibrationProfile } from "./calibration";
 import { CursorFilter } from "./cursorFilter";
-import { palmCenter, pinchRatio, toDisplay, type ImageSize, type Point2 } from "./geometry";
+import { FlickDetector } from "./flickDetector";
+import { fingerExtension, palmCenter, pinchRatio, toDisplay, type ImageSize, type Landmark, type Point2 } from "./geometry";
 import { IdentityTracker, type Detection } from "./identity";
-import { PinchDetector, type PinchState } from "./pinchDetector";
+import { PinchDetector } from "./pinchDetector";
+import type { TriggerDetector, TriggerState } from "./triggerDetector";
+
+/** Flick sensitivity: scales the calibrated flick speed and depth thresholds. */
+export type FlickSensitivity = "less" | "normal" | "more";
+const SENSITIVITY_SCALE: Readonly<Record<FlickSensitivity, number>> = { less: 1.2, normal: 1, more: 0.8 };
 
 /**
  * A hand with no valid observation for this long is declared lost. The audio
@@ -28,7 +34,8 @@ export interface HandView {
   cursor: Point2 | null;
   hoverTargetId: string | null;
   heldTargetId: string | null;
-  pinch: PinchState;
+  /** State of the play-gesture detector (pinch or flick). */
+  trigger: TriggerState;
 }
 
 export interface TrackedFrameInput {
@@ -41,7 +48,9 @@ export interface TrackedFrameInput {
 interface HandRuntime {
   state: HandState;
   status: HandStatus;
-  pinch: PinchDetector;
+  trigger: TriggerDetector;
+  /** Recent hover targets by frame time, so a flick can latch the pad from its first frame. */
+  hoverHistory: { tMs: number; id: string | null }[];
   filter: CursorFilter;
   cursor: Point2 | null;
   hoverTargetId: string | null;
@@ -63,9 +72,11 @@ export class GestureInterpreter {
   private readonly lanePx: Record<HandRole, SizePx>;
   private readonly identity: IdentityTracker;
   private readonly hands: Record<HandRole, HandRuntime>;
+  private readonly sensitivity: FlickSensitivity;
 
-  constructor(opts: { profile: CalibrationProfile; lanePx: Record<HandRole, SizePx> }) {
+  constructor(opts: { profile: CalibrationProfile; lanePx: Record<HandRole, SizePx>; sensitivity?: FlickSensitivity }) {
     this.profile = opts.profile;
+    this.sensitivity = opts.sensitivity ?? "normal";
     this.lanePx = { ...opts.lanePx };
     this.identity = new IdentityTracker(opts.profile.handednessCorrection);
     this.hands = { left: this.fresh("left"), right: this.fresh("right") };
@@ -83,7 +94,7 @@ export class GestureInterpreter {
       cursor: h.cursor && { ...h.cursor },
       hoverTargetId: h.hoverTargetId,
       heldTargetId: h.heldTargetId,
-      pinch: h.pinch.state(),
+      trigger: h.trigger.state(),
     });
     return { left: v(this.hands.left), right: v(this.hands.right) };
   }
@@ -112,7 +123,7 @@ export class GestureInterpreter {
       if (d) {
         if (this.observe(role, d, frame, events)) observed.push(role);
       } else {
-        this.hands[role].pinch.invalidFrame();
+        this.hands[role].trigger.invalidFrame();
         this.hands[role].status = "not-visible";
       }
     }
@@ -149,11 +160,27 @@ export class GestureInterpreter {
     }
   }
 
-  private fresh(_role: HandRole): HandRuntime {
+  private detector(role: HandRole): TriggerDetector {
+    const hand = this.profile.hands[role];
+    if (this.profile.trigger === "flick") {
+      if (!hand.flick) throw new Error(`The ${role} hand has no flick calibration.`);
+      const k = SENSITIVITY_SCALE[this.sensitivity];
+      return new FlickDetector({ ...hand.flick, dropMin: hand.flick.dropMin * k, rateMin: hand.flick.rateMin * k });
+    }
+    if (!hand.pinch) throw new Error(`The ${role} hand has no pinch calibration.`);
+    return new PinchDetector(hand.pinch);
+  }
+
+  private signal(landmarks: readonly Landmark[], size: ImageSize) {
+    return this.profile.trigger === "flick" ? fingerExtension(landmarks, size) : pinchRatio(landmarks, size);
+  }
+
+  private fresh(role: HandRole): HandRuntime {
     return {
       state: "disarmed",
       status: "not-visible",
-      pinch: new PinchDetector(this.profile.hands[_role].pinch),
+      trigger: this.detector(role),
+      hoverHistory: [],
       filter: new CursorFilter(this.profile.cursorTauMs),
       cursor: null,
       hoverTargetId: null,
@@ -166,7 +193,8 @@ export class GestureInterpreter {
     const h = this.hands[role];
     h.state = state;
     h.status = "not-visible";
-    h.pinch.reset();
+    h.trigger.reset();
+    h.hoverHistory = [];
     h.filter.reset();
     h.cursor = null;
     h.hoverTargetId = null;
@@ -176,10 +204,10 @@ export class GestureInterpreter {
   /** Returns true when the observation was valid. */
   private observe(role: HandRole, d: Detection, frame: TrackedFrameInput, events: TrackingEvent[]): boolean {
     const h = this.hands[role];
-    const ratio = pinchRatio(d.landmarks, frame.imageSize);
+    const ratio = this.signal(d.landmarks, frame.imageSize);
     if (!ratio.ok) {
-      // Present but unmeasurable: neither renews the hand nor advances a pinch.
-      h.pinch.invalidFrame();
+      // Present but unmeasurable: neither renews the hand nor advances the gesture.
+      h.trigger.invalidFrame();
       h.status = "not-visible";
       return false;
     }
@@ -189,10 +217,11 @@ export class GestureInterpreter {
     const hover = hoverTarget(LAYOUT[role], local, h.hoverTargetId, this.lanePx[role]);
     h.cursor = local;
     h.hoverTargetId = hover?.id ?? null;
+    h.hoverHistory = [...h.hoverHistory, { tMs: frame.tMs, id: h.hoverTargetId }].slice(-4);
     h.status = "tracking";
     h.lastValidMs = frame.tMs;
 
-    const transition = h.pinch.update(ratio.value, frame.tMs);
+    const transition = h.trigger.update(ratio.value, frame.tMs);
     const inRest = hover?.kind === "rest";
     const tMs = frame.tMs;
 
@@ -202,9 +231,12 @@ export class GestureInterpreter {
           events.push({ type: "rest", hand: role, tMs });
           h.state = "resting";
         } else if (transition === "closed") {
-          events.push({ type: "press", hand: role, targetId: hover?.id ?? null, tMs });
+          // A flick latches the pad under the hand when the stroke began.
+          const onset = h.trigger.onsetMs();
+          const latched = onset === null ? (hover?.id ?? null) : (h.hoverHistory.find((x) => x.tMs === onset)?.id ?? hover?.id ?? null);
+          events.push({ type: "press", hand: role, targetId: latched, tMs });
           h.state = "held";
-          h.heldTargetId = hover?.id ?? null;
+          h.heldTargetId = latched;
         }
         break;
       case "held":
@@ -220,7 +252,7 @@ export class GestureInterpreter {
         break;
       case "disarmed":
       case "resting":
-        if (!inRest && h.pinch.state() === "open") {
+        if (!inRest && h.trigger.state() === "open") {
           events.push({ type: "arm", hand: role, tMs });
           h.state = "open";
         }

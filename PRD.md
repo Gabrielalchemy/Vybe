@@ -45,7 +45,7 @@ Explicitly outside this release: accounts, cloud synchronization, publishing, co
 
 ### First playable session
 
-Open Play → start the session with a click → prepare audio → enable camera → frame both hands → calibrate reach and pinches → see a silent preview → make the first sound → try a chord and melody together → learn Rest and Stop. A denied camera permission leaves a usable conventional-input instrument and a clear retry path.
+Open Play → start the session with a click → prepare audio → enable camera → frame both hands → calibrate reach and the play gesture → see a silent preview → make the first sound → try a chord and melody together → learn Rest and Stop. A denied camera permission leaves a usable conventional-input instrument and a clear retry path.
 
 ### Return to a favorite setup
 
@@ -75,17 +75,19 @@ Acceptance: denied permissions, unavailable cameras, missing samples, and interr
 
 ### R03 — Calibration · phase 3
 
-Save per-camera movement regions, mirroring configuration, pinch thresholds, smoothing settings, and a profile version. Use comfortable seated reach; never require both hands to reach across each other. Calibration records open and closed examples and rejects overlapping distributions rather than pretending success. Provide a short readiness check and explicit recalibration. Recommend a beginner exercise tempo from measured repeatable gestures, not an invented skill score.
+Save per-camera movement regions, mirroring configuration, the play gesture and its thresholds, smoothing settings, and a profile version. Changing the play gesture requires recalibration. Use comfortable seated reach; never require both hands to reach across each other. Calibration records open and triggering examples (and, for the flick, ordinary between-pad movement) and rejects overlapping distributions rather than pretending success. Provide a short readiness check and explicit recalibration. Recommend a beginner exercise tempo from measured repeatable gestures, not an invented skill score.
 
 Acceptance: a saved profile survives restart; changing the camera or processing geometry invalidates the relevant calibration. Bad calibration cannot arm hand performance.
 
-### R04 — Selection and pinch semantics · phases 3, 4
+### R04 — Selection and trigger semantics · phases 3, 4
 
-Palm position selects a target silently. Pinch close triggers it once; release ends the key hold; a held pinch never retriggers or changes pitch as the hand moves. Closing over a gap, disabled note, or empty chord pad produces no sound and still requires an open hand before a later trigger. Notes do not jump to the nearest enabled pad.
+Palm position selects a target silently. The play gesture triggers it once; release ends the key hold; a held gesture never retriggers or changes pitch as the hand moves. Triggering over a gap, disabled note, or empty chord pad produces no sound and still requires an open hand before a later trigger. Notes do not jump to the nearest enabled pad.
+
+The default play gesture is a **finger flick**: the fingers flick down from the knuckles while the hand stays over the target; fingers held down hold the note, lifting releases it. The flick latches the target hovered when the stroke began. **Pinch** (thumb to index finger) remains selectable in Settings. Both are measured with the same instrument trials. (Owner decision, 2026-10-15: pinch felt slow and often did not register.)
 
 Mirrored video and cursor geometry must agree. The left/right role is anatomical, not a detection-array index or the side of the screen a hand happens to occupy.
 
-Acceptance: slow movement across boundaries, tremor, sustained pinches, and entering a pad while already pinched produce deterministic results.
+Acceptance: slow movement across boundaries, tremor, sustained triggers, entering a pad while already triggered, and (for the flick) whole-hand movement between pads produce deterministic results; whole-hand movement never triggers.
 
 ### R05 — Rest, sustain, and recovery · phase 4
 
@@ -207,13 +209,13 @@ These are explicit first-release limits, chosen to bound browser memory and pars
 | Accidental notes | At most one per five-minute neutral-movement test | Timed test including repositioning and resting |
 | Loss recovery | Affected live dry audio ends within 200 ms of last valid observation | Synthetic stall tests plus actual-camera loss/sustain checks |
 | Physical response | Median below 100 ms; p95 below 150 ms | Independent motion-and-audio measurement; never inferred solely from browser metrics |
-| Comfort | A 20-minute session with ordinary rests is comfortable to the owner | Owner feedback on reach, repeated pinches, and fatigue |
+| Comfort | A 20-minute session with ordinary rests is comfortable to the owner | Owner feedback on reach, repeated play gestures, and fatigue |
 | Musical integrity | Displayed, sounded, recorded, restored, and exported pitches agree | Fixtures for every factory pad and representative custom chords |
 | Sustained session | 30 minutes with eight tracks and live input; no stuck notes or accumulating drift | Resource/timing trace and an audible check |
 | Persistence | Restore a complete project and reproduce the current mix | Archive round-trip and saved-schema fixtures |
 | Offline operation | Full main journey after disconnecting external network | Browser request inspection and restart test |
 
-Annotate test conditions: browser/build, camera settings, delegate, audio output, instrument/track load, lighting, and calibration version. Report sample counts and missed/wrong/duplicate triggers separately. Physical latency is measured from completed pinch to audible onset. Label in-app capture/inference/dispatch/output figures as component measurements or estimates.
+Annotate test conditions: browser/build, camera settings, delegate, audio output, instrument/track load, lighting, and calibration version. Report sample counts and missed/wrong/duplicate triggers separately. Physical latency is measured from the completed play gesture (the start of the flick's downward stroke, or thumb–index contact for pinch) to audible onset. Label in-app capture/inference/dispatch/output figures as component measurements or estimates.
 
 Use statuses `not started`, `in progress`, `automated checks passed`, `manual validation pending`, and `accepted`. A simulator result cannot pass a camera gate. The Phase 4 instrument gate precedes studio expansion; missing owner validation remains explicit rather than being replaced by an agent's judgment.
 

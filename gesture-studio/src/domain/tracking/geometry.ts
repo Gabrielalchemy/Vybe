@@ -65,6 +65,33 @@ export function pinchRatio(landmarks: readonly Landmark[], size: ImageSize): Res
   return ok(distancePx(at(LANDMARK.thumbTip), at(LANDMARK.indexTip), size) / span);
 }
 
+const FLICK_TIPS = [8, 12, 16] as const;
+
+/**
+ * Finger extension: how far the index, middle and ring fingertips reach along
+ * the hand's own axis (wrist to middle knuckle), in palm widths. Folding the
+ * fingers (a flick) lowers it; moving or resizing the whole hand does not.
+ * Measured in pixels so the camera aspect ratio does not bias it.
+ */
+export function fingerExtension(landmarks: readonly Landmark[], size: ImageSize): Result<number> {
+  if (!isValidLandmarkSet(landmarks)) return fail("Hand landmarks are incomplete.");
+  const at = (i: number) => landmarks[i] as Landmark;
+  const span = distancePx(at(LANDMARK.indexMcp), at(LANDMARK.pinkyMcp), size);
+  if (!(span >= MIN_PALM_SPAN_PX)) return fail("Hand is too small or edge-on to measure the fingers.");
+  const wrist = at(LANDMARK.wrist);
+  const mid = at(LANDMARK.middleMcp);
+  const ax = (mid.x - wrist.x) * size.width;
+  const ay = (mid.y - wrist.y) * size.height;
+  const axisLen = Math.hypot(ax, ay);
+  if (!(axisLen >= MIN_PALM_SPAN_PX)) return fail("Hand is too small or edge-on to measure the fingers.");
+  let sum = 0;
+  for (const i of FLICK_TIPS) {
+    const tip = at(i);
+    sum += ((tip.x - wrist.x) * size.width * ax + (tip.y - wrist.y) * size.height * ay) / axisLen;
+  }
+  return ok(sum / FLICK_TIPS.length / span);
+}
+
 /** Inference runs on unmirrored frames; display coordinates are transformed exactly once here. */
 export function toDisplay(p: Point2, mirrored: boolean): Point2 {
   return mirrored ? { x: 1 - p.x, y: p.y } : { x: p.x, y: p.y };

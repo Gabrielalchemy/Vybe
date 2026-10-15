@@ -138,7 +138,7 @@ test("Settings opens as a labelled dialog, Escape stops audio and closes it, foc
   await expect(settings).toBeFocused();
 });
 
-test("development simulator drives the pipeline and leaves nothing held", async ({ page }) => {
+test("development simulator drives the pipeline and leaves nothing held", { tag: "@dev" }, async ({ page }) => {
   await page.getByRole("button", { name: "Settings" }).click();
   await page.getByRole("button", { name: "Left hand lost under sustain" }).click();
   await expect(page.getByRole("dialog").getByText(/flushed \(|loss|lost/).first()).toBeVisible({ timeout: 5000 });
@@ -198,7 +198,7 @@ test("pointer hit geometry matches the drawn target near a boundary", async ({ p
   await page.mouse.up();
 });
 
-test("component showcase renders every target state (development fixture)", async ({ page }) => {
+test("component showcase renders every target state (development fixture)", { tag: "@dev" }, async ({ page }) => {
   await page.goto("/?showcase");
   await expect(page.getByRole("heading", { name: /Component showcase/ })).toBeVisible();
   for (const caption of ["Sounding, held", "Released with sustain", "Scale Guard blocked (Phase 5)", "Empty chord slot", "Resting"]) {

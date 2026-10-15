@@ -20,6 +20,13 @@ class FakeSource implements TrackingSource {
   stats: NonNullable<TrackingSource["stats"]> = () => null;
   handlers: { onFrame: (r: FrameResult) => void; onFailure: (e: { code: string; message: string }) => void } | null = null;
   stopped = 0;
+  steady: boolean[] = [];
+  steadySupported = true;
+  async setSteadyFrameRate(on: boolean): Promise<Result<void, string>> {
+    if (!this.steadySupported) return { ok: false, error: "This camera does not allow manual exposure in the browser." };
+    this.steady.push(on);
+    return { ok: true, value: undefined };
+  }
   async start(opts: SourceStart, handlers: NonNullable<FakeSource["handlers"]>): Promise<Result<SourceInfo, SourceError>> {
     this.started = opts;
     this.handlers = handlers;
@@ -43,7 +50,8 @@ class FakeSource implements TrackingSource {
 }
 
 const PROFILE: CalibrationProfile = {
-  profileVersion: 1,
+  profileVersion: 2,
+  trigger: "pinch",
   createdAt: "2026-10-12T12:00:00.000Z",
   camera: { deviceId: "cam-1", label: "HP HD Camera", width: 1280, height: 720, mirrored: true },
   processing: { longEdgePx: 640, modelSha256: MODEL },
@@ -94,6 +102,8 @@ async function setup(withProfile: boolean) {
   const opened = await openRepository({ factory: new IDBFactory(), nowIso: () => "2026-10-12T12:00:00.000Z" });
   if (!opened.ok) throw new Error("repo");
   repo = opened.value;
+  // These tests play by pinch; the default gesture (flick) is covered separately.
+  await repo.setPreference("triggerGesture", "pinch");
   if (withProfile) await repo.saveCalibration(PROFILE);
   source = new FakeSource();
   events = [];
@@ -115,6 +125,10 @@ async function setup(withProfile: boolean) {
   control.setLaneSize("left", { width: 500, height: 400 });
   control.setLaneSize("right", { width: 750, height: 400 });
 }
+
+const settle = async () => {
+  for (let i = 0; i < 10; i++) await new Promise((r) => setTimeout(r, 0));
+};
 
 function frame(hands: WorkerHand[], step = 33) {
   now += step;
@@ -360,6 +374,90 @@ describe("HandControl", () => {
     ticks.forEach((tick) => tick());
     expect(leases.retired).toEqual(["live-right"]);
     expect(session.snapshot().soundingNotes).toEqual([]);
+  });
+
+  it("steady 30 fps is off by default: each start restores automatic exposure; when turned on it is remembered", async () => {
+    await control.start(null);
+    // Off by default: automatic exposure is applied explicitly, undoing any manual exposure left on the device.
+    expect(source.steady).toEqual([false]);
+    expect(control.snapshot().steadyFrameRate).toEqual({ enabled: false, message: null });
+    await control.setSteadyFrameRate(true);
+    expect(source.steady).toEqual([false, true]);
+    expect(control.snapshot().steadyFrameRate).toEqual({ enabled: true, message: null });
+    control.stop();
+    await control.start(null);
+    expect(source.steady).toEqual([false, true, true]);
+  });
+
+  it("turning steady 30 fps off switches the running camera back to automatic exposure", async () => {
+    await control.start(null);
+    await control.setSteadyFrameRate(true);
+    await control.setSteadyFrameRate(false);
+    expect(source.steady).toEqual([false, true, false]);
+    expect(control.snapshot().steadyFrameRate).toEqual({ enabled: false, message: null });
+    expect(await repo.getPreference("cameraSteadyFrameRate")).toEqual({ ok: true, value: false });
+  });
+
+  it("a picture that stays too dark under steady 30 fps turns it off and says why", async () => {
+    source.stats = () => ({
+      delegate: "GPU", submitted: 1, skippedBusy: 0, stale: 0, failedFrames: 0, deliveryRate: 30, inferenceRate: 30,
+      inferenceMs: null, turnaroundMs: null, resultAgeMs: null, brightness: 0.04,
+    });
+    await control.start(null);
+    await control.setSteadyFrameRate(true);
+    for (let i = 0; i < 2; i++) { now += 1000; ticks.forEach((t) => t()); }
+    await settle();
+    expect(control.snapshot().steadyFrameRate.enabled).toBe(true); // two dark seconds: not yet
+    now += 1000; ticks.forEach((t) => t());
+    await settle();
+    expect(control.snapshot().steadyFrameRate).toEqual({ enabled: false, message: expect.stringMatching(/too dark/) });
+    expect(source.steady.at(-1)).toBe(false);
+    expect(await repo.getPreference("cameraSteadyFrameRate")).toEqual({ ok: true, value: false });
+  });
+
+  it("reports a camera that cannot hold its frame rate and leaves the setting off", async () => {
+    await control.start(null);
+    source.steadySupported = false;
+    await control.setSteadyFrameRate(true);
+    expect(control.snapshot().steadyFrameRate).toEqual({ enabled: false, message: "This camera does not allow manual exposure in the browser." });
+    expect(await repo.getPreference("cameraSteadyFrameRate")).toEqual({ ok: true, value: undefined });
+  });
+
+  it("defaults to the flick gesture and asks to recalibrate a pinch profile", async () => {
+    await repo.setPreference("triggerGesture", undefined);
+    await control.start(null);
+    expect(control.snapshot()).toMatchObject({ trigger: "flick", phase: "needs-calibration", calibration: { status: "incompatible", reasons: ["trigger"] } });
+  });
+
+  it("switching the play gesture is remembered and re-checks the saved calibration", async () => {
+    await repo.setPreference("triggerGesture", "flick");
+    await control.start(null);
+    expect(control.snapshot().phase).toBe("needs-calibration");
+    await control.setTriggerGesture("pinch");
+    expect(control.snapshot()).toMatchObject({ trigger: "pinch", phase: "readiness" });
+    expect(await repo.getPreference("triggerGesture")).toEqual({ ok: true, value: "pinch" });
+  });
+
+  it("flick sensitivity is remembered", async () => {
+    await control.start(null);
+    expect(control.snapshot().sensitivity).toBe("normal");
+    await control.setSensitivity("more");
+    expect(control.snapshot().sensitivity).toBe("more");
+    expect(await repo.getPreference("flickSensitivity")).toEqual({ ok: true, value: "more" });
+  });
+
+  it("calibration uses the chosen gesture", async () => {
+    let seen: string | null = null;
+    calibrationFactory = (setup) => {
+      seen = setup.trigger;
+      return { feed: () => undefined, step: () => ({ kind: "identify", hand: "left" }), instruction: () => "", progress: () => 0, retry: () => undefined, skipPace: () => undefined };
+    };
+    await setup(false);
+    calibrationFactory = undefined;
+    await repo.setPreference("triggerGesture", "flick");
+    await control.start(null);
+    control.beginCalibration();
+    expect(seen).toBe("flick");
   });
 });
 

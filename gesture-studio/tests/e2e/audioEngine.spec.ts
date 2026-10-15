@@ -105,26 +105,26 @@ async function render(page: import("@playwright/test").Page, scenario: string): 
 
 const SILENT = 1e-4;
 
-test("a key release decays smoothly to silence", async ({ page }) => {
+test("a key release decays smoothly to silence", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "key-release");
   expect(r.beforeRelease).toBeGreaterThan(0.05);
   expect(r.late).toBeLessThan(SILENT);
   expect(r.maxStep).toBeLessThan(0.1); // no click-sized discontinuities
 });
 
-test("releasing one owner's copy of a pitch leaves the other sounding", async ({ page }) => {
+test("releasing one owner's copy of a pitch leaves the other sounding", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "identical-pitch");
   expect(r.after530 as number).toBeGreaterThan((r.beforeRelease as number) * 0.3);
   expect(r.late as number).toBeGreaterThan(0.01);
 });
 
-test("a forced loss release is silent within 30 ms, without a click", async ({ page }) => {
+test("a forced loss release is silent within 30 ms, without a click", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "forced-loss");
   expect(r.after530).toBeLessThan(SILENT);
   expect(r.maxStep).toBeLessThan(0.1);
 });
 
-test("an unrenewed camera lease silences the lane by 200 ms even with no release and a stalled main thread", async ({ page }) => {
+test("an unrenewed camera lease silences the lane by 200 ms even with no release and a stalled main thread", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "lease-stall");
   expect(r.early).toBeGreaterThan(0.05);
   expect(r.at190).toBeGreaterThan(0);
@@ -133,30 +133,30 @@ test("an unrenewed camera lease silences the lane by 200 ms even with no release
   expect(r.maxStep).toBeLessThan(0.1);
 });
 
-test("renewing the lease extends sound until 200 ms after the latest observation", async ({ page }) => {
+test("renewing the lease extends sound until 200 ms after the latest observation", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "lease-renewed");
   expect(r.after210).toBeGreaterThan(0.05);
   expect(r.after320).toBeLessThan(SILENT);
 });
 
-test("a renewal during the lease fade recovers without a click", async ({ page }) => {
+test("a renewal during the lease fade recovers without a click", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "lease-renewed-during-fade");
   expect(r.after210).toBeGreaterThan(0.05);
   expect(r.maxStep).toBeLessThan(0.1);
 });
 
-test("keyboard lanes are not subject to the camera lease", async ({ page }) => {
+test("keyboard lanes are not subject to the camera lease", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "lease-off");
   expect(r.late).toBeGreaterThan(0.05);
 });
 
-test("at the 128-voice limit the oldest voice is stolen and reported", async ({ page }) => {
+test("at the 128-voice limit the oldest voice is stolen and reported", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "steal");
   expect(r.activeVoices).toBeLessThanOrEqual(128);
   expect(r.stolen).toEqual(["v000", "v001"]);
 });
 
-test("panic stops every lane within 30 ms", async ({ page }) => {
+test("panic stops every lane within 30 ms", { tag: "@dev" }, async ({ page }) => {
   const r = await render(page, "panic");
   expect(r.beforeRelease).toBeGreaterThan(0.05);
   expect(r.after530).toBeLessThan(SILENT);

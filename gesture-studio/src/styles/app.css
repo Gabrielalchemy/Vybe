@@ -438,3 +438,15 @@ kbd {
   font: 400 14px/20px var(--font-ui);
 }
 .field--inline { grid-auto-flow: column; align-items: center; gap: var(--space-2); }
+.toggle { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font: 500 14px/20px var(--font-ui); cursor: pointer; }
+.toggle input { width: 20px; height: 20px; accent-color: var(--lane-melody); }
+.steady-fps { display: grid; gap: var(--space-1); }
+.trial-bar__feedback--correct { color: var(--status-success); }
+.trial-bar__feedback--wrong { color: var(--status-danger); }
+.trial-bar__feedback--missed { color: var(--status-warning); }
+.choice { border: 1px solid var(--border-subtle); border-radius: var(--radius-panel); padding: var(--space-3) var(--space-4); margin: 0; display: grid; gap: var(--space-2); }
+.choice legend { font: 500 14px/20px var(--font-ui); padding: 0 var(--space-1); }
+.choice__option { display: flex; gap: var(--space-2); align-items: flex-start; min-height: 44px; cursor: pointer; font-size: 14px; line-height: 20px; }
+.choice__option input { width: 20px; height: 20px; margin-top: 0; accent-color: var(--lane-melody); flex: none; }
+.choice--row { grid-template-columns: repeat(3, max-content); align-items: center; column-gap: var(--space-6); }
+.choice--row > p { grid-column: 1 / -1; }

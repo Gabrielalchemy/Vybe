@@ -23,6 +23,10 @@ export interface TrialEnvironment {
   camera: string | null;
   /** Browser estimate, not a measurement. */
   outputLatencyMs: number | null;
+  /** The play gesture and its calibrated thresholds per hand, for diagnosing missed and accidental presses. */
+  trigger?: "flick" | "pinch";
+  thresholds?: Record<"left" | "right", Record<string, number>> | null;
+  steadyFrameRate?: boolean;
 }
 
 export interface SavedTrial {
@@ -45,13 +49,21 @@ export interface TrialTotals {
   missed: number;
   duplicates: number;
   otherHandPresses: number;
+  anticipatory: number;
+  betweenAttemptPresses: number;
   correctRate: number | null;
   neutralSessions: number;
   accidentalNotes: number;
 }
 
 export interface TrialSnapshot {
-  running: { kind: "accuracy" | "neutral"; prompt: (Prompt & { index: number; total: number }) | null; remainingMs: number | null } | null;
+  running: {
+    kind: "accuracy" | "neutral";
+    prompt: (Prompt & { index: number; total: number }) | null;
+    /** The attempt just scored, shown before the next prompt. */
+    feedback: Attempt | null;
+    remainingMs: number | null;
+  } | null;
   last: SavedTrial | null;
   saved: readonly SavedTrial[];
   totals: TrialTotals;
@@ -67,10 +79,15 @@ export interface TrialControllerDeps {
   every: (ms: number, fn: () => void) => () => void;
   environment: () => TrialEnvironment;
   seed: () => number;
+  /** Lane-local cursor of a hand right now (camera), for near-miss diagnosis. */
+  cursorFor?: (hand: "left" | "right") => { x: number; y: number } | null;
 }
 
 function totalsOf(saved: readonly SavedTrial[]): TrialTotals {
-  const t: TrialTotals = { sessions: 0, attempts: 0, correct: 0, wrong: 0, missed: 0, duplicates: 0, otherHandPresses: 0, correctRate: null, neutralSessions: 0, accidentalNotes: 0 };
+  const t: TrialTotals = {
+    sessions: 0, attempts: 0, correct: 0, wrong: 0, missed: 0, duplicates: 0, otherHandPresses: 0,
+    anticipatory: 0, betweenAttemptPresses: 0, correctRate: null, neutralSessions: 0, accidentalNotes: 0,
+  };
   for (const s of saved) {
     if (s.summary.kind === "accuracy") {
       t.sessions += 1;
@@ -80,6 +97,9 @@ function totalsOf(saved: readonly SavedTrial[]): TrialTotals {
       t.missed += s.summary.missed;
       t.duplicates += s.summary.duplicates;
       t.otherHandPresses += s.summary.otherHandPresses;
+      // Sessions saved before these counts existed contribute zero.
+      t.anticipatory += s.summary.anticipatory ?? 0;
+      t.betweenAttemptPresses += s.summary.betweenAttemptPresses ?? 0;
     } else {
       t.neutralSessions += 1;
       t.accidentalNotes += s.summary.accidentalNotes;
@@ -183,7 +203,15 @@ export class TrialController {
     const trial = this.trial;
     if (!trial) return;
     if (o.action === "press" && (o.status === "sounded" || o.status === "silent")) {
-      trial.input({ kind: "press", hand: o.hand, targetId: o.targetId, atMs: o.atMs, input: o.input, sounded: o.status === "sounded" });
+      trial.input({
+        kind: "press",
+        hand: o.hand,
+        targetId: o.targetId,
+        atMs: o.atMs,
+        input: o.input,
+        sounded: o.status === "sounded",
+        cursor: this.deps.cursorFor?.(o.hand) ?? null,
+      });
     } else if (o.action === "release" && o.status === "released") {
       trial.input({ kind: "release", hand: o.hand, atMs: o.atMs, input: o.input });
     }
@@ -237,7 +265,7 @@ export class TrialController {
     const t = this.trial;
     const now = this.deps.nowMs();
     return Object.freeze({
-      running: t ? { kind: t.kind, prompt: t.current(), remainingMs: t.kind === "neutral" ? t.remainingMs(now) : null } : null,
+      running: t ? { kind: t.kind, prompt: t.current(), feedback: t.feedback(), remainingMs: t.kind === "neutral" ? t.remainingMs(now) : null } : null,
       last: this.last,
       saved: this.saved,
       totals: totalsOf(this.saved),
@@ -249,7 +277,7 @@ export class TrialController {
   private publish(): void {
     const next = this.build();
     // Neutral countdown: publish at most once per displayed second.
-    const key = JSON.stringify([next.running?.kind, next.running?.prompt?.index, next.running?.remainingMs !== null && next.running ? Math.ceil((next.running.remainingMs ?? 0) / 1000) : null, this.saved.length, this.message, this.saveError?.code]);
+    const key = JSON.stringify([next.running?.kind, next.running?.prompt?.index, next.running?.feedback?.index, next.running?.remainingMs !== null && next.running ? Math.ceil((next.running.remainingMs ?? 0) / 1000) : null, this.saved.length, this.message, this.saveError?.code]);
     this.current = next;
     if (key === this.lastPublishedKey) return;
     this.lastPublishedKey = key;

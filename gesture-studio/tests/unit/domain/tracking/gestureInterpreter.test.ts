@@ -6,7 +6,8 @@ import type { Detection } from "../../../../src/domain/tracking/identity";
 import { handAtPalm } from "../../../fixtures/hands";
 
 const PROFILE: CalibrationProfile = {
-  profileVersion: 1,
+  profileVersion: 2,
+  trigger: "pinch",
   createdAt: "2026-10-12T12:00:00.000Z",
   camera: { deviceId: "cam", label: "cam", width: 640, height: 360, mirrored: true },
   processing: { longEdgePx: 640, modelSha256: "a".repeat(64) },
